@@ -1,0 +1,18 @@
+{
+  "fonts": ["system-ui"],
+  "fontSizes": [14, 16, 24],
+  "typeRules": [{ "selector": "h1", "sizes": [24] }],
+  "minControlSize": 24,
+  "controlSizeRules": [],
+  "minControlGap": 8,
+  "minControlInset": 8,
+  "controlContainers": ["[data-ui-container]"],
+  "minLayoutGap": 8,
+  "bannedCopy": [],
+  "viewports": [
+    { "width": 390, "height": 844 },
+    { "width": 1440, "height": 900 }
+  ],
+  "colorSchemes": ["light", "dark"],
+  "exceptions": []
+}

@@ -67,7 +67,7 @@ jobs:
         run: |
           node --input-type=module <<'JS'
           import { appendFileSync, readFileSync } from 'node:fs';
-          const proof = JSON.parse(readFileSync('.usual-design/artifacts/package-smoke.json', 'utf8'));
+          const proof = JSON.parse(readFileSync('.usual-ui/artifacts/package-smoke.json', 'utf8'));
           appendFileSync(process.env.GITHUB_OUTPUT, `path=${proof.artifact}\n`);
           JS
       - name: Check npm publication contents without publishing
@@ -78,7 +78,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: npm-candidate-${{ inputs.version }}-${{ github.sha }}
-          path: .usual-design/artifacts/
+          path: .usual-ui/artifacts/
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 14

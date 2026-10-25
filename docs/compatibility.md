@@ -1,21 +1,47 @@
 # Compatibility and coverage
 
-This document describes the first-release target and interpretation of results. The implementation’s fixtures and CLI output remain the evidence for a particular build.
+This document describes the source checker and current checkout additions. The implementation’s fixtures and CLI output remain the evidence for a particular build. Grouped reporting, numeric utility improvements, and optional rendered checks below are for the next release; they are not in the published 0.3.0 package.
 
 ## Supported starting point
 
-| Area               | Initial boundary                                                                                        |
-| ------------------ | ------------------------------------------------------------------------------------------------------- |
-| Runtime            | Node.js 22.12 or newer, npm package and source builds.                                                  |
-| Application syntax | JavaScript, TypeScript, JSX, TSX; React and source-compatible Next.js layouts.                          |
-| Tailwind           | Version 4. Detect older, missing, or ambiguous version metadata; never treat it as verified v4 support. |
-| Configuration      | `usual.design.json` schema version 1; project-relative coverage and token paths.                        |
-| Tokens             | CSS token declarations, including Tailwind v4 `@theme` custom properties.                               |
-| Rule types         | Approved values; explicit semantic element/component/prop rules; native-to-shared-component rules.      |
-| Model integration  | Existing agent runs the workflow. The deterministic checker calls no model.                             |
-| Visual preview     | Project-owned loopback showcase with real components/themes (0.3.0+); labeled reference sheet for older proposals.                            |
+| Area               | Initial boundary                                                                                                   |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Runtime            | Node.js 22.12 or newer, npm package and source builds.                                                             |
+| Application syntax | JavaScript, TypeScript, JSX, TSX; React and source-compatible Next.js layouts.                                     |
+| Tailwind           | Version 4. Detect older, missing, or ambiguous version metadata; never treat it as verified v4 support.            |
+| Configuration      | `usual.design.json` schema version 1; project-relative coverage and token paths.                                   |
+| Tokens             | CSS token declarations, including Tailwind v4 `@theme` custom properties.                                          |
+| Rule types         | Approved values; explicit semantic element/component/prop rules; native-to-shared-component rules.                 |
+| Model integration  | Existing agent runs the workflow. The deterministic checker calls no model.                                        |
+| Visual preview     | Project-owned loopback showcase with real components/themes (0.3.0+); labeled reference sheet for older proposals. |
 
 No browser, server render, screenshot, or runtime application inspection happens during a normal check. There is no assertion that configured rules prove beauty, usability, accessibility, or runtime behavior.
+
+## Optional rendered path
+
+The separate `@usualui/lint/playwright` entry point accepts an existing Playwright
+page or frame. It requires optional `lintapple@0.1.20` and `playwright@1.63.0`
+dependencies and a complete explicit runtime policy. The reviewed lintapple
+repository declared 0.1.23; that newer source is not the installed engine. See
+[runtime setup and scope](runtime.md) for the tested adapter contract.
+
+The consumer owns browser installation, application startup, authentication,
+navigation, readiness, and viewport/theme matrices. The adapter neither launches
+nor downloads a browser. Normal source commands, the wizard, and hooks do not
+import this optional stack.
+
+A rendered result describes only the entered document/state and current viewport.
+Reports distinguish failed and unresolved findings, omitted child frames, observed
+contract counts, and untested interaction scope. Omitted frames do not by
+themselves fail the assertion; audit required frames separately. Measurement may
+temporarily mutate the page, and the application runs normally, so this path does
+not have the source scanner's inertness. A passing runtime report does not clear
+static coverage findings or activate a source category.
+
+Non-browser tests verify the adapter and report contracts. The prepared Playwright
+examples and rendered website specimens have not received browser acceptance in
+this implementation. Neither a source pass nor a runtime pass establishes complete
+accessibility, every route/state, or visual quality.
 
 ## Static source behavior
 
@@ -37,13 +63,13 @@ The exact supported helper/AST cases are captured in the tests for each build. A
 
 Files outside declared coverage cannot be claimed as checked. Ignoring generated/vendor code can be appropriate; excluding ordinary application paths to hide findings defeats the contract.
 
-Discovery reports sorted exclusion boundaries with reasons `standard`, `configured`, and `outside-include`. Standard skipped directories include `node_modules`, `dist`, `.git`, `.usual-design`, `.next`, `.nuxt`, `.output`, `.svelte-kit`, `.turbo`, `.vercel`, `.vite`, and `.parcel-cache`; declaration files and `docs/usual-design` records are also excluded. Skipped dependency/build directories are reported at their boundary without enumerating their contents. Explicit token sources and local CSS imports can still appear in the analyzed file list; a skipped traversal boundary does not hide those explicit reads.
+Discovery reports sorted exclusion boundaries with reasons `standard`, `configured`, and `outside-include`. Standard skipped directories include `node_modules`, `dist`, `.git`, `.usual-ui`, `.next`, `.nuxt`, `.output`, `.svelte-kit`, `.turbo`, `.vercel`, `.vite`, and `.parcel-cache`; declaration files and `docs/usual-ui` records are also excluded. Skipped dependency/build directories are reported at their boundary without enumerating their contents. Explicit token sources and local CSS imports can still appear in the analyzed file list; a skipped traversal boundary does not hide those explicit reads.
 
 Discovery limits each input to 2 MB, the complete covered/token/CSS-import graph to 10,000 files, and directory traversal to 50,000 entries and 64 levels. Exclude unrelated generated trees when these bounds are exceeded. CSS import cycles are visited once. Tailwind wildcard namespace resets such as `@theme { --color-*: initial; }` are reported as unresolved style coverage, rather than fabricated concrete token definitions; current warnings conservatively affect active style categories. Newly observed token definitions never expand the manifest’s approved policy.
 
 ## Operating boundaries
 
-Checks are read-only. Write operations such as manifest initialization, saving audits, repair selection, decisions, category activation, and integration setup are explicit. The local wizard is a loopback development interface. It does not import arbitrary project components or execute project configuration. Keep project source in the target directory; do not point the tool at a path whose content you are not authorized to inspect.
+Source checks are read-only. Write operations such as manifest initialization, saving audits, repair selection, decisions, category activation, and integration setup are explicit. The local wizard is a loopback development interface. It does not import arbitrary project components or execute project configuration. Keep project source in the target directory; do not point the tool at a path whose content you are not authorized to inspect.
 
 First-class agent configuration is for local Codex and Claude Code. Agent trust settings and hook capabilities vary by version. Validate actual event execution locally; configuration presence alone is not proof. Human-readable instructions remain available for other agents.
 
@@ -62,6 +88,7 @@ The website’s visual direction is provisional. The repository and `@usualui/li
 - Semantic component targets use declared import/export identity and literal matching props. Covered explicit named/default re-export chains, static local aliases, JSONC aliases, and unambiguous star reexports are resolved where provable. Cycles, mutable/dynamic aliases, ambiguous stars, and arbitrary runtime composition remain unverified.
 - A variable approval permits a direct variable reference, not gradients, arithmetic, or fallback literals that happen to mention that variable. Approve such composite classes/values explicitly if intentional.
 - Current property families cover colors, typography, configured spacing/layout, and supported shape/effect declarations. This is source-contract checking, not a full browser cascade model.
+- Numeric typography utilities such as `tabular-nums` are recognized. Text size, alignment, wrapping, and independent numeric features can coexist; conflicting numeric spacing or a numeric reset still violates a tabular requirement. See [explicit numeric-cell rules](numeric-rules.md); no global right-alignment or numeric policy is imposed.
 
 Prepared activation/policy decision records carry the proposed resulting manifest hash. They are not commit receipts: compare that hash with the actual manifest before claiming activation succeeded. A later failed write can leave a prepared decision behind safely.
 

@@ -7,10 +7,29 @@ import {
 } from '../../src/onboarding-types';
 import { request } from './api';
 import { OnboardingPreview } from './OnboardingPreview';
-import { safeColor } from './model';
+import { OnboardingChoice } from './OnboardingChoices';
+import { OnboardingProject, OnboardingReview } from './OnboardingSummary';
 import type { Audit } from './types';
 
 const steps = ['Your project', 'Colors', 'Typography', 'Spacing', 'Shape', 'Components', 'Review'];
+const intros = [
+  'A few thoughtful choices. One consistent design system.',
+  'Choose a palette with a clear role for every color.',
+  'Set a type system that makes your content easy to read.',
+  'Give your layouts a consistent rhythm and room to breathe.',
+  'Choose the corners and surfaces that feel like your product.',
+  'Choose the shared components your team can build on.',
+  'Your choices, together. Review them before saving your contract.',
+];
+
+export function choicesAreSaved(choices: OnboardingChoices, saved: OnboardingChoices): boolean {
+  const keys = new Set([...Object.keys(choices.selections), ...Object.keys(saved.selections)]);
+  return (
+    [...keys].every((key) => choices.selections[key] === saved.selections[key]) &&
+    choices.deferred.length === saved.deferred.length &&
+    choices.deferred.every((category) => saved.deferred.includes(category))
+  );
+}
 
 export function GuidedOnboarding({
   initial,
@@ -30,11 +49,16 @@ export function GuidedOnboarding({
   const [error, setError] = useState('');
   const [impact, setImpact] = useState<Audit | null>(null);
   const [approved, setApproved] = useState(false);
+  const [contractSaved, setContractSaved] = useState(false);
+  const [previewExpanded, setPreviewExpanded] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
+  const stepNavigation = useRef<HTMLElement>(null);
   const proposal = record.session.proposal;
   const category = categories[step - 1];
   const decisions = proposal.decisions.filter((d) => d.category === category);
   const deferred = choices.deferred.includes(category);
+  const unsaved = !choicesAreSaved(choices, record.session.choices);
+  const disabled = !!pending || !!record.stale || contractSaved;
   let manifest;
   let compilationError = '';
   try {
@@ -46,6 +70,35 @@ export function GuidedOnboarding({
   useEffect(() => {
     heading.current?.focus();
   }, [step]);
+
+  useEffect(() => {
+    const navigation = stepNavigation.current;
+    if (!navigation) return;
+    const revealCurrentStep = () => {
+      const active = navigation.querySelector<HTMLButtonElement>('[aria-current="step"]');
+      if (!active || navigation.scrollWidth <= navigation.clientWidth) return;
+      const container = navigation.getBoundingClientRect();
+      const button = active.getBoundingClientRect();
+      if (button.left < container.left + 8)
+        navigation.scrollLeft += button.left - container.left - 8;
+      else if (button.right > container.right - 8)
+        navigation.scrollLeft += button.right - container.right + 8;
+    };
+    revealCurrentStep();
+    const observer = new ResizeObserver(revealCurrentStep);
+    observer.observe(navigation);
+    return () => observer.disconnect();
+  }, [step]);
+
+  useEffect(() => {
+    if (!unsaved) return;
+    function warn(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+    window.addEventListener('beforeunload', warn);
+    return () => window.removeEventListener('beforeunload', warn);
+  }, [unsaved]);
 
   async function operation(label: string, action: () => Promise<void>) {
     if (pending) return;
@@ -80,31 +133,32 @@ export function GuidedOnboarding({
     await operation('Saving your design contract', async () => {
       const updated = await persist(6);
       await request('onboarding/finish', { expectedHash: updated.sessionHash, approved: true });
+      setContractSaved(true);
       await onSaved();
     });
   }
   return (
     <section className="onboarding" aria-labelledby="onboarding-title" aria-busy={!!pending}>
-      <div className="onboarding-layout">
+      <div className={`onboarding-layout${previewExpanded ? ' preview-expanded' : ''}`}>
+        <nav ref={stepNavigation} className="onboarding-steps" aria-label="Onboarding progress">
+          {steps.map((label, i) => (
+            <button
+              key={label}
+              className="secondary"
+              aria-current={step === i ? 'step' : undefined}
+              disabled={disabled}
+              onClick={() =>
+                void operation('Saving progress', async () => {
+                  await persist(i);
+                })
+              }
+            >
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              {label}
+            </button>
+          ))}
+        </nav>
         <aside className="onboarding-decisions">
-          <nav className="onboarding-steps" aria-label="Onboarding progress">
-            {steps.map((label, i) => (
-              <button
-                key={label}
-                className="secondary"
-                aria-current={step === i ? 'step' : undefined}
-                disabled={!!pending || !!record.stale}
-                onClick={() =>
-                  void operation('Saving progress', async () => {
-                    await persist(i);
-                  })
-                }
-              >
-                <span>{String(i + 1).padStart(2, '0')}</span>
-                {label}
-              </button>
-            ))}
-          </nav>
           {record.stale && (
             <div className="callout error" role="alert">
               <p>{record.stale}</p>
@@ -118,9 +172,6 @@ export function GuidedOnboarding({
               {error}
             </div>
           )}
-          <div role="status" aria-live="polite">
-            {pending}
-          </div>
           <div className="onboarding-fields">
             <p className="eyebrow">
               Step {step + 1} of {steps.length}
@@ -128,68 +179,26 @@ export function GuidedOnboarding({
             <h1 id="onboarding-title" ref={heading} tabIndex={-1}>
               {steps[step]}
             </h1>
+            <p className="onboarding-intro">{intros[step]}</p>
+            {compilationError && (
+              <div className="callout error" role="alert">
+                {compilationError}
+              </div>
+            )}
             {step === 0 ? (
-              <>
-                <h3>{proposal.title}</h3>
-                <p>{proposal.summary}</p>
-                <dl className="onboarding-scope">
-                  <dt>Covered paths</dt>
-                  <dd>
-                    {proposal.scope.include.map((p) => (
-                      <code key={p}>{p}</code>
-                    ))}
-                  </dd>
-                  <dt>Excluded paths</dt>
-                  <dd>
-                    {proposal.scope.ignore?.join(', ') ||
-                      'None configured; standard generated/dependency exclusions apply.'}
-                  </dd>
-                  <dt>Token sources</dt>
-                  <dd>
-                    {proposal.scope.tokens?.join(', ') ||
-                      'No additional token files; covered CSS is discovered automatically.'}
-                  </dd>
-                  <dt>Manifest destination</dt>
-                  <dd>
-                    <code>{manifestPath}</code>
-                  </dd>
-                </dl>
-                {proposal.notes?.length ? (
-                  <div className="callout">
-                    <strong>Before you choose</strong>
-                    <ul>
-                      {proposal.notes.map((note, i) => (
-                        <li key={i}>{note}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
-                <p className="small-text">
-                  Review the recommendations, then save your contract. Repairs and activation follow
-                  separately.
-                </p>
-              </>
+              <OnboardingProject proposal={proposal} manifestPath={manifestPath} />
             ) : step === 6 ? (
               <>
-                <p>
-                  Review the exact contract below. Evidence, alternatives, and your saved choices
-                  stay in <code>docs/usual-design/onboarding/</code>.
-                </p>
-                <ul className="review-groups">
-                  {categories.map((c) => {
-                    const group = proposal.decisions.filter((d) => d.category === c);
-                    return (
-                      <li key={c}>
-                        <strong>{c}</strong>
-                        <span>
-                          {choices.deferred.includes(c) || !group.length
-                            ? 'Deferred — no policy added'
-                            : `${group.length} decisions · inactive until repaired`}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                <OnboardingReview
+                  proposal={proposal}
+                  choices={choices}
+                  disabled={disabled}
+                  edit={(next) =>
+                    void operation('Saving progress', async () => {
+                      await persist(next);
+                    })
+                  }
+                />
                 <details>
                   <summary>Manifest to save</summary>
                   <pre className="onboarding-json">
@@ -198,7 +207,7 @@ export function GuidedOnboarding({
                 </details>
                 <button
                   className="secondary"
-                  disabled={!!pending || !!record.stale || !!compilationError}
+                  disabled={disabled || !!compilationError}
                   onClick={() =>
                     void operation('Checking the proposed policy', async () => {
                       const result = await request<{ audit: Audit }>('onboarding/preview', {
@@ -218,22 +227,6 @@ export function GuidedOnboarding({
                     <p>This is an unsaved audit. You choose repairs after saving.</p>
                   </div>
                 )}
-                <label className="onboarding-approval">
-                  <input
-                    type="checkbox"
-                    checked={approved}
-                    onChange={(e) => setApproved(e.target.checked)}
-                    disabled={!!pending || !!record.stale}
-                  />
-                  I approve these rules and coverage. Save the manifest with all categories
-                  inactive.
-                </label>
-                <button
-                  disabled={!approved || !!pending || !!record.stale || !!compilationError}
-                  onClick={() => void finish()}
-                >
-                  Approve & save manifest
-                </button>
               </>
             ) : (
               <>
@@ -241,7 +234,7 @@ export function GuidedOnboarding({
                   <input
                     type="checkbox"
                     checked={deferred || !decisions.length}
-                    disabled={!!pending || !!record.stale || !decisions.length}
+                    disabled={disabled || !decisions.length}
                     onChange={(e) =>
                       choose({
                         ...choices,
@@ -263,66 +256,23 @@ export function GuidedOnboarding({
                   <fieldset
                     className="onboarding-question"
                     key={decision.id}
-                    disabled={!!pending || !!record.stale || deferred}
+                    disabled={disabled || deferred}
                   >
                     <legend>{decision.title}</legend>
                     <p>{decision.description}</p>
                     {decision.options.map((option) => (
-                      <div
-                        className="onboarding-option"
+                      <OnboardingChoice
                         key={option.id}
-                        data-selected={choices.selections[decision.id] === option.id}
-                      >
-                        <label>
-                          <input
-                            type="radio"
-                            name={decision.id}
-                            checked={choices.selections[decision.id] === option.id}
-                            onChange={() =>
-                              choose({
-                                ...choices,
-                                selections: { ...choices.selections, [decision.id]: option.id },
-                              })
-                            }
-                          />
-                          <strong>{option.label}</strong>
-                          {decision.recommended === option.id && (
-                            <span className="onboarding-recommended">Recommended</span>
-                          )}
-                        </label>
-                        <p>{option.explanation}</p>
-                        <div className="onboarding-swatches">
-                          {Object.entries(option.preview?.light ?? {})
-                            .filter(([key]) => ['primary', 'surface', 'onSurface'].includes(key))
-                            .map(([key, value]) => (
-                              <code key={key}>
-                                {safeColor(value) && (
-                                  <span
-                                    className="onboarding-swatch"
-                                    aria-hidden="true"
-                                    style={{ backgroundColor: safeColor(value)! }}
-                                  />
-                                )}
-                                {key}: {value}
-                              </code>
-                            ))}
-                        </div>
-                        <details>
-                          <summary>Source evidence & rules</summary>
-                          <ul>
-                            {option.evidence.map((e, i) => (
-                              <li key={i}>
-                                <code>
-                                  {e.file}:{e.line}
-                                </code>
-                              </li>
-                            ))}
-                          </ul>
-                          <pre className="onboarding-json">
-                            {JSON.stringify(option.rules, null, 2)}
-                          </pre>
-                        </details>
-                      </div>
+                        decision={decision}
+                        option={option}
+                        selected={choices.selections[decision.id] === option.id}
+                        choose={() =>
+                          choose({
+                            ...choices,
+                            selections: { ...choices.selections, [decision.id]: option.id },
+                          })
+                        }
+                      />
                     ))}
                   </fieldset>
                 ))}
@@ -330,45 +280,103 @@ export function GuidedOnboarding({
             )}
           </div>
           <div className="onboarding-navigation">
-            {step > 0 && (
-              <button
-                className="secondary"
-                disabled={!!pending || !!record.stale}
-                onClick={() =>
-                  void operation('Saving progress', async () => {
-                    await persist(step - 1);
-                  })
-                }
-              >
-                Back
-              </button>
+            {step === 6 && !contractSaved && (
+              <label className="onboarding-approval">
+                <input
+                  type="checkbox"
+                  checked={approved}
+                  onChange={(e) => setApproved(e.target.checked)}
+                  disabled={disabled}
+                />
+                I approve these rules and coverage. Save the manifest with all categories inactive.
+              </label>
             )}
-            <button
-              className="secondary"
-              disabled={!!pending || !!record.stale}
-              onClick={() =>
-                void operation('Progress saved', async () => {
-                  await persist(step);
-                })
-              }
+            <p
+              className="onboarding-progress-status"
+              data-unsaved={unsaved}
+              role="status"
+              aria-live="polite"
             >
-              Save
-            </button>
-            {step < 6 && (
-              <button
-                disabled={!!pending || !!record.stale}
-                onClick={() =>
-                  void operation('Saving progress', async () => {
-                    await persist(step + 1);
-                  })
-                }
-              >
-                {step === 5 ? 'Review contract' : 'Continue'}
-              </button>
-            )}
+              {pending
+                ? `${pending}…`
+                : contractSaved
+                  ? 'Contract saved · All categories inactive'
+                  : unsaved
+                    ? 'Unsaved choices · Continue saves your progress'
+                    : 'Progress saved · Contract not yet approved'}
+            </p>
+            <div className="onboarding-navigation-actions">
+              {contractSaved ? (
+                <button
+                  disabled={!!pending}
+                  onClick={() =>
+                    void operation('Opening repair workspace', async () => {
+                      await onSaved();
+                    })
+                  }
+                >
+                  Open repair workspace
+                </button>
+              ) : (
+                <>
+                  {step > 0 && (
+                    <button
+                      className="secondary"
+                      disabled={disabled}
+                      onClick={() =>
+                        void operation('Saving progress', async () => {
+                          await persist(step - 1);
+                        })
+                      }
+                    >
+                      Back
+                    </button>
+                  )}
+                  <button
+                    className="secondary"
+                    disabled={disabled}
+                    onClick={() =>
+                      void operation('Saving progress', async () => {
+                        await persist(step);
+                      })
+                    }
+                  >
+                    Save progress
+                  </button>
+                  {step < 6 && (
+                    <button
+                      disabled={disabled}
+                      onClick={() =>
+                        void operation('Saving progress', async () => {
+                          await persist(step + 1);
+                        })
+                      }
+                    >
+                      {step === 5 ? 'Review contract' : `Continue to ${steps[step + 1]}`}
+                    </button>
+                  )}
+                  {step === 6 && (
+                    <button
+                      disabled={!approved || disabled || !!compilationError}
+                      onClick={() => void finish()}
+                    >
+                      Approve & save manifest
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </aside>
-        <OnboardingPreview proposal={proposal} choices={choices} />
+        <OnboardingPreview
+          proposal={proposal}
+          choices={choices}
+          activeCategory={category}
+          onChoicesChange={choose}
+          choicesDisabled={disabled}
+          expanded={previewExpanded}
+          onExpandedChange={setPreviewExpanded}
+        />
       </div>
     </section>
   );

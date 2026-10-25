@@ -303,7 +303,7 @@ test('built wizard serves its HTML and referenced bundled assets over HTTP', asy
     assert.equal(response.status, 200);
     assert.match(response.headers.get('content-type') ?? '', /^text\/html/);
     const html = await response.text();
-    assert.match(html, /Usual Design/);
+    assert.match(html, /Usual UI/);
     assert.ok(!html.includes(wizard.token));
     const assets = [...html.matchAll(/(?:src|href)="([^"#]+\.(?:js|css))"/g)].map(
       (match) => match[1],

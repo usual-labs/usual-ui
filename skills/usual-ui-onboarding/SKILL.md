@@ -1,10 +1,10 @@
 ---
-name: usual-design-onboarding
-description: Set up Usual Design in a React and Tailwind v4 project, inspect its design system, prepare a guided visual wizard, and hand off an approved manifest and selected repairs.
+name: usual-ui-onboarding
+description: Set up Usual UI in a React and Tailwind v4 project, inspect its design system, prepare a guided visual wizard, and hand off an approved manifest and selected repairs.
 license: MIT
 ---
 
-# Usual Design onboarding
+# Usual UI onboarding
 
 Turn the project's existing design intent into a small, enforceable contract.
 Use the user's current agent and a maintained local wizard. Do not generate a
@@ -14,18 +14,18 @@ isolated project showcase using its real components and fonts.
 ## 1. Prepare the project
 
 Read project instructions, package manager/lockfile, existing `usual.design.json`,
-token stylesheets, shared components, themes, and `docs/usual-design/` records.
+token stylesheets, shared components, themes, and `docs/usual-ui/` records.
 Preserve unrelated work. An existing active or nonempty contract belongs in the
 policy workshop; review intentional changes rather than replacing it.
 
 Install `@usualui/lint@^0.3.0` as a project development dependency using its package
-manager. Check `./node_modules/.bin/usual-design --version` and `--help`; this
+manager. Check `./node_modules/.bin/usual-ui --version` and `--help`; this
 workflow requires `onboard` and the project showcase bridge (0.3.0+). Do not substitute an older command when
 the release is unavailable. The CLI needs Node 22.12+; the current Vercel Skills
 installer needs Node 22.20+. Native hooks require the project-local dependency.
 
-Run `./node_modules/.bin/usual-design init --json` for discovery without writes.
-Capture the evidence in `docs/usual-design/onboarding/discovery.json` if useful;
+Run `./node_modules/.bin/usual-ui init --json` for discovery without writes.
+Capture the evidence in `docs/usual-ui/onboarding/discovery.json` if useful;
 never paste inventory into the manifest. Inspect actual sources beyond default
 coverage, including monorepo application roots. Analysis is static: do not
 execute project modules or claim all styles are supported.
@@ -33,7 +33,7 @@ execute project modules or claim all styles are supported.
 ## 2. Propose design decisions
 
 Read [the proposal format and role guide](references/proposal.md). Write
-`docs/usual-design/onboarding/proposal.json` following the installed
+`docs/usual-ui/onboarding/proposal.json` following the installed
 `node_modules/@usualui/lint/schema/onboarding.schema.json`.
 
 Use colors, typography, spacing, shape, and components. Map optional semantic
@@ -68,9 +68,9 @@ process running during review; do not leave the user to wire it up manually.
 Run:
 
 ```sh
-./node_modules/.bin/usual-design onboard --proposal docs/usual-design/onboarding/proposal.json
-./node_modules/.bin/usual-design onboard --proposal docs/usual-design/onboarding/proposal.json --write
-./node_modules/.bin/usual-design wizard
+./node_modules/.bin/usual-ui onboard --proposal docs/usual-ui/onboarding/proposal.json
+./node_modules/.bin/usual-ui onboard --proposal docs/usual-ui/onboarding/proposal.json --write
+./node_modules/.bin/usual-ui wizard
 ```
 
 Fix proposal errors from CLI feedback. Preparation saves recommendations,
@@ -87,7 +87,7 @@ saves `usual.design.json` with every category inactive; it is not a claim that
 repairs or enforcement are complete.
 
 If sources changed, refresh source evidence and rerun preparation. Previous
-sessions are retained in `docs/usual-design/onboarding/history/`. If policy
+sessions are retained in `docs/usual-ui/onboarding/history/`. If policy
 changed, inspect it in the existing policy workshop instead of overwriting it.
 
 ## 5. Finish the handoff
@@ -97,14 +97,14 @@ and selected-repair approval. The user chooses a batch; the generated prompt
 references the saved plan and verification command. Deferred work remains in
 project records. Do not replace this with a generic instruction to fix everything.
 
-Read the installed `usual-design` skill for approved repairs. If absent, install
-it with `npx skills add usual-labs/usual-design --skill usual-design`, targeting
+Read the installed `usual-ui` skill for approved repairs. If absent, install
+it with `npx skills add usual-labs/usual-ui --skill usual-ui`, targeting
 the user's agent and project scope. Read the installed file immediately.
 The repair workflow must preserve policy and verify the exact saved batch.
 Activate only selected, fully resolved categories through a fresh audit.
 
 Offer workflow integration after the dependency is installed: preview
-`usual-design setup --host codex` (or `claude` / `portable`), review the actual
+`usual-ui setup --host codex` (or `claude` / `portable`), review the actual
 files, then apply `--write` within the user's requested setup scope. Hooks are
 optional; use `--hooks` only when requested and distinguish configuration from
 the agent's trust/actual execution.

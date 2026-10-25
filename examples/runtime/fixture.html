@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Usual runtime example</title>
+    <style>
+      html {
+        font: 16px/1.5 system-ui;
+        color: #202020;
+        background: #fff;
+      }
+      body {
+        margin: 24px;
+      }
+      h1 {
+        font-size: 24px;
+      }
+      button {
+        font: inherit;
+        color: inherit;
+        background: inherit;
+        min-height: 40px;
+        padding: 8px 16px;
+        border: 1px solid currentColor;
+      }
+      dialog {
+        font: inherit;
+        color: inherit;
+        background: inherit;
+        max-width: calc(100vw - 80px);
+        padding: 24px;
+      }
+      dialog::backdrop {
+        background: rgb(0 0 0 / 40%);
+      }
+      @media (prefers-color-scheme: dark) {
+        html {
+          color: #f3f3f3;
+          background: #202020;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Project settings</h1>
+      <p>Review the settings before saving.</p>
+      <button type="button" id="open">Review settings</button>
+      <dialog aria-labelledby="dialog-title">
+        <h1 id="dialog-title">Review settings</h1>
+        <p>Your choices are ready for review.</p>
+        <button type="button" id="close">Close</button>
+      </dialog>
+    </main>
+    <script>
+      const dialog = document.querySelector('dialog');
+      document.querySelector('#open').addEventListener('click', () => dialog.showModal());
+      document.querySelector('#close').addEventListener('click', () => dialog.close());
+    </script>
+  </body>
+</html>

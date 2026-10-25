@@ -18,6 +18,7 @@ export function App() {
   const [handoff, setHandoff] = useState<Handoff | null>(null);
   const [policyDraft, setPolicyDraft] = useState('');
   const [workshop, setWorkshop] = useState(false);
+  const [navigationTarget, setNavigationTarget] = useState<string | null>(null);
   const errorRef = useRef<HTMLDivElement>(null);
 
   const refresh = useCallback(async () => {
@@ -42,6 +43,15 @@ export function App() {
   useEffect(() => {
     if (error) errorRef.current?.focus();
   }, [error]);
+
+  useEffect(() => {
+    if (!navigationTarget) return;
+    const target = document.getElementById(navigationTarget);
+    if (!target) return;
+    target.focus({ preventScroll: true });
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setNavigationTarget(null);
+  }, [navigationTarget, state, review, handoff]);
 
   async function run(label: string, action: () => Promise<void>): Promise<boolean> {
     if (pending) return false;
@@ -68,10 +78,10 @@ export function App() {
       const comparison = next.audit && compareAudits(previous, next.audit);
       setNotice(
         comparison
-          ? `Fresh audit: ${comparison.resolved} resolved, ${comparison.added} new, ${comparison.remaining} remaining findings.`
+          ? `Fresh audit: ${comparison.resolved} resolved, ${comparison.added} new, ${comparison.remaining} remaining ${comparison.remaining === 1 ? 'finding' : 'findings'}.`
           : 'Fresh audit saved. Review the six groups below.',
       );
-      document.getElementById('audit')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setNavigationTarget('audit');
     });
   }
 
@@ -126,6 +136,7 @@ export function App() {
       });
       setHandoff(next);
       setReview(false);
+      setNavigationTarget('handoff');
       setNotice('Repair plan saved. Hand it to your agent, then run a fresh audit.');
     });
   }
@@ -157,7 +168,7 @@ export function App() {
         Skip to design setup
       </a>
       <header className="site-header">
-        <a className="wordmark" href="#main" aria-label="Usual Design workshop">
+        <a className="wordmark" href="#main" aria-label="Usual UI workshop">
           <span className="brand-mark" aria-hidden="true">
             u<span>.</span>
           </span>
@@ -212,8 +223,17 @@ export function App() {
             manifestPath={state.manifestPath ?? 'usual.design.json'}
             openWorkshop={() => setWorkshop(true)}
             onSaved={async () => {
-              await request('audit', {});
-              await refresh();
+              try {
+                await request('audit', {});
+              } catch (cause) {
+                setError(
+                  `Your contract was saved, but the first audit could not finish. ${cause instanceof Error ? cause.message : 'Run a fresh audit to continue.'}`,
+                );
+                return;
+              } finally {
+                await refresh();
+              }
+              setNavigationTarget('audit');
               setNotice(
                 'Manifest saved. Choose a repair batch below, then copy the prompt for your agent.',
               );
@@ -221,26 +241,28 @@ export function App() {
           />
         ) : state ? (
           <div aria-busy={!!pending}>
-            {state.onboarding?.saved && (
-              <section className="callout">
-                <strong>Your design contract is saved</strong>
-                <p>
-                  <code>{state.manifestPath}</code>
-                </p>
-                <p>
-                  Review the audit and choose the repairs your agent should make. Activate selected
-                  categories after their full audit is clean.
-                </p>
-                <a href="#audit">Choose repairs</a>
+            {state.manifest && (
+              <section className="workshop-status" aria-label="Project status">
+                <div>
+                  <strong>Your design contract is saved</strong>
+                  <p>
+                    {state.audit && state.audit.manifestHash === state.manifestHash
+                      ? `${state.audit.findings.length} ${state.audit.findings.length === 1 ? 'finding' : 'findings'} to review · ${state.manifest.active?.length ?? 0} of 5 categories active`
+                      : 'Run a fresh audit to see what needs attention.'}
+                  </p>
+                </div>
+                <a href="#audit">
+                  {state.audit ? 'Review audit' : 'Go to audit'} <span aria-hidden="true">↗</span>
+                </a>
               </section>
             )}
             {!state.manifest && !state.onboarding && (
               <div className="callout">
                 <strong>Prepare guided onboarding with your agent</strong>
                 <p>
-                  Install the usual-design-onboarding skill from usual-labs/usual-design using the
-                  Vercel Skills CLI. Your agent will inspect the project and prepare recommendations
-                  for the guided wizard.
+                  Install the usual-ui-onboarding skill from usual-labs/usual-ui using the Vercel
+                  Skills CLI. Your agent will inspect the project and prepare recommendations for
+                  the guided wizard.
                 </p>
               </div>
             )}
@@ -262,7 +284,7 @@ export function App() {
                 previewImpact={previewImpact}
               />
             </div>
-            <div id="audit">
+            <div id="audit" tabIndex={-1}>
               <AuditBoard
                 state={state}
                 pending={!!pending}
@@ -271,14 +293,12 @@ export function App() {
                 recheck={() => void recheck()}
                 review={() => {
                   setReview(true);
-                  document
-                    .getElementById('handoff')
-                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  setNavigationTarget('handoff');
                 }}
                 activate={(category) => void activate(category)}
               />
             </div>
-            <div id="handoff">
+            <div id="handoff" tabIndex={-1}>
               <RepairHandoff
                 review={review}
                 selected={selectedFindings}
@@ -286,7 +306,10 @@ export function App() {
                 handoff={handoff}
                 pending={!!pending}
                 confirm={() => void savePlan()}
-                cancel={() => setReview(false)}
+                cancel={() => {
+                  setReview(false);
+                  setNavigationTarget('audit-selection');
+                }}
                 recheck={() => void recheck()}
               />
             </div>

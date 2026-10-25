@@ -74,7 +74,7 @@ test('preview cannot load arbitrary CSS or remote resources and reports unresolv
   });
 });
 
-test('reference sheet exposes palette, typography, control and layout specimens with explicit limits', () => {
+test('reference gallery exposes keyboard tabs and foundation specimens with explicit limits', () => {
   const html = renderToStaticMarkup(
     createElement(ReferenceShowcase, {
       values: chosenPreview(proposal, recommendedChoices(proposal), 'light'),
@@ -85,15 +85,20 @@ test('reference sheet exposes palette, typography, control and layout specimens 
   for (const label of [
     'Color palette',
     'Typography',
-    'Actions &amp; states',
-    'Inputs &amp; selection',
-    'Data &amp; navigation',
     'Spacing &amp; shape',
+    'Design system',
+    'Components',
+    'Dashboard',
+    'Mail',
+    'Chat',
+    'CRM',
+    'Finance',
   ])
     assert.ok(html.includes(label), label);
-  assert.match(html, /type="checkbox"/);
-  assert.match(html, /<textarea/);
-  assert.match(html, /<table/);
+  assert.equal((html.match(/role="tab"/g) ?? []).length, 7);
+  assert.equal((html.match(/aria-selected="true"/g) ?? []).length, 1);
+  assert.equal((html.match(/tabindex="-1"/g) ?? []).length, 6);
+  assert.match(html, /role="tabpanel"/);
   assert.match(html, /Neutral defaults/);
   assert.match(html, /not a render of your application/);
   assert.doesNotMatch(html, /<script|<iframe|https:\/\//);
@@ -144,6 +149,8 @@ test('project preview uses a separate sandboxed frame and only offers supported 
   assert.match(html, /sandbox="allow-scripts allow-same-origin"/);
   assert.doesNotMatch(html, /allow-forms|allow-popups|allow-top-navigation|x-usual-token/);
   assert.match(html, /Actual components/);
+  assert.match(html, /aria-label="Preview source"/);
+  assert.match(html, /Reference examples/);
   assert.match(html, /aria-pressed="true"/);
   assert.match(html, /> Dark</);
   assert.doesNotMatch(html, /> Light<|sample-card/);

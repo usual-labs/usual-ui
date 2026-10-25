@@ -287,7 +287,7 @@ test('wizard exposes exact policy path, component identities and evidence, and s
       total: 0,
       pending: false,
       handoff: {
-        path: 'docs/usual-design/repairs/approved.json',
+        path: 'docs/usual-ui/repairs/approved.json',
         prompt: 'Read the saved approved plan and preserve the policy.',
         plan: {},
       },
@@ -296,7 +296,7 @@ test('wizard exposes exact policy path, component identities and evidence, and s
       recheck() {},
     }),
   );
-  assert.ok(handoff.includes('docs/usual-design/repairs/approved.json'));
+  assert.ok(handoff.includes('docs/usual-ui/repairs/approved.json'));
   assert.match(handoff, /<textarea[^>]*readOnly=""[^>]*>Read the saved approved plan/i);
   assert.ok(handoff.includes('Select instruction'));
 });

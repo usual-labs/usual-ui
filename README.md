@@ -1,18 +1,22 @@
-# Usual Design
+# Usual UI
 
 Project-owned design rules. Deterministic feedback for developers and coding agents.
 
-Usual Design is the first open-source tool from **Usual Labs**. It helps React/Tailwind projects enforce approved values, explicit semantic conventions, and shared component usage. The project owns the contract; its existing coding agent helps discover conventions and repair violations.
+Usual UI is the first open-source tool from **Usual Labs**. It helps React/Tailwind projects enforce approved values, explicit semantic conventions, and shared component usage. The project owns the contract; its existing coding agent helps discover conventions and repair violations.
 
-Install [@usualui/lint](https://www.npmjs.com/package/@usualui/lint) from npm. Source is available at [usual-labs/usual-design](https://github.com/usual-labs/usual-design). The website remains a local preview.
+Install [@usualui/lint](https://www.npmjs.com/package/@usualui/lint) from npm. Source is available at [usual-labs/usual-ui](https://github.com/usual-labs/usual-ui). The website remains a local preview.
+
+The Usual UI rename is currently available in this source checkout. Published
+`@usualui/lint@0.3.0` still uses the previous command and skill names; see the
+[upgrade notes](docs/renaming.md) before switching an existing project.
 
 ## Quick start
 
 Paste this prompt into your coding agent from your React/Tailwind v4 project:
 
 ```text
-Set up Usual Design in this project. Install the usual-design-onboarding skill
-from usual-labs/usual-design using `npx skills add`, selecting only this skill
+Set up Usual UI in this project. Install the usual-ui-onboarding skill
+from usual-labs/usual-ui using `npx skills add`, selecting only this skill
 and my current agent at project scope. Read its installed SKILL.md and follow
 it now: inspect our design system, install the compatible @usualui/lint CLI,
 prepare recommendations and a showcase of our real components, fonts, and
@@ -21,25 +25,25 @@ existing policy and unrelated changes. Finish with the saved manifest and the
 wizard’s prompt for my approved repair batch.
 ```
 
-The agent installs the [onboarding skill](skills/usual-design-onboarding/SKILL.md)
+The agent installs the [onboarding skill](skills/usual-ui-onboarding/SKILL.md)
 through [Vercel Skills](https://skills.sh), reads your code, and prepares the local
 wizard. You choose colors, typography, spacing, shape, and components while a
 project component showcase updates live. Review the minimal `usual.design.json`, then select
 repairs and copy the generated prompt back to your agent.
 
-Use Node **22.20+** for the Skills installer (the Usual Design CLI itself supports
+Use Node **22.20+** for the Skills installer (the Usual UI CLI itself supports
 22.12+). Guided onboarding requires **@usualui/lint 0.3.0+**. Direct skill install:
 
 ```sh
-npx skills add usual-labs/usual-design --skill usual-design-onboarding
+npx skills add usual-labs/usual-ui --skill usual-ui-onboarding
 ```
 
 Existing tokens keep their names. Discovery, recommendations, and deferred work
-stay in `docs/usual-design/`; the manifest contains only approved policy.
+stay in `docs/usual-ui/`; the manifest contains only approved policy.
 The showcase runs in your project’s development server. Older proposals without
 a showcase use an explicitly labeled reference sheet. Project showcases require
 @usualui/lint 0.3.0 or later; see the
-[showcase setup guide](skills/usual-design-onboarding/references/showcase.md).
+[showcase setup guide](skills/usual-ui-onboarding/references/showcase.md).
 
 For manual CLI setup and existing-policy editing, see the [usage guide](docs/usage.md).
 
@@ -51,6 +55,13 @@ An inactive category is **entirely unchecked by lint**, including new violations
 - [Compatibility and coverage boundaries](docs/compatibility.md)
 - [Local demonstration and release review](docs/demo.md)
 - [Agent setup and enforcement](docs/integrations.md)
+- [Numeric-cell semantic rules](docs/numeric-rules.md)
+- [Optional rendered checks in existing Playwright tests](docs/runtime.md)
+
+Grouped reporting, the numeric utility improvements, rendered teaching examples,
+and the optional Playwright entry point are in the current source checkout for the
+next release. They are not included in the published `@usualui/lint@0.3.0` package.
+See [Unreleased changes](CHANGELOG.md#unreleased) for setup and evidence limits.
 
 Source checkouts also contain the website and visual proposal in `site/`, plus the ordered implementation plan in `docs/agents/plans/init/`.
 

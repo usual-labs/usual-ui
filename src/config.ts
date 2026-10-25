@@ -39,7 +39,7 @@ export function parseManifest(input: unknown): Manifest {
     input.version !== 1
   )
     throw new Error(
-      `Unsupported manifest version ${input.version}; this release supports version 1. Use a compatible Usual Design release or migrate the manifest to the version 1 schema after reviewing its fields. Changing the version number alone is not a migration.`,
+      `Unsupported manifest version ${input.version}; this release supports version 1. Use a compatible Usual UI release or migrate the manifest to the version 1 schema after reviewing its fields. Changing the version number alone is not a migration.`,
     );
   if (!validate(input))
     throw new Error(
@@ -159,7 +159,7 @@ export async function saveManifest(
   const next = JSON.stringify(m, null, 2) + '\n';
   await atomicWrite(
     root,
-    `docs/usual-design/decisions/${randomUUID()}.json`,
+    `docs/usual-ui/decisions/${randomUUID()}.json`,
     JSON.stringify(
       {
         version: 1,

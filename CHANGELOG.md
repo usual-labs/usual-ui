@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+- Rename the product, repository, CLI, skills and generated paths to Usual UI / `usual-ui`. Keep the npm package, policy format and old CLI alias compatible; preserve old website entry points. See [upgrade notes](docs/renaming.md) for existing records and agent integrations.
+
+- Add a wizard theme studio with bounded light/dark exploration, undo/redo, setup comparison, canvas sizing, and reference/request export; deepen application previews and component states while keeping exploration separate from approved project policy.
+- Add a themed wizard preview gallery with Design system, Components, Dashboard, Mail, Chat, CRM, and Finance examples, local interactions, and a source switch that preserves the connected project showcase.
+- Polish the wizard's seven-step onboarding and repair workspace with clearer choices, contextual previews, saved-progress feedback, concise policy disclosures, and responsive layouts; verify the example onboarding and selected-repair flow in a browser while preserving explicit policy approval and activation boundaries.
+- Group repeated static diagnostics in CLI output and the wizard, with counts by kind/category/rule and structured repair guidance. JSON output adds a derived summary while retaining every finding ID and source location; saved audit and repair records keep their existing schema and approval boundaries.
+- Recognize numeric typography utilities and separate text size, alignment, wrapping, and numeric feature conflicts. Add explicit numeric-cell semantic examples without introducing a global numeric policy.
+- Add rendered before/after specimens to the website's existing examples, paired with source diagnostics and fixes. These are illustrative specimens, not live audit results.
+- Add the optional `@usualui/lint/playwright` entry point for existing pages/frames, explicit runtime policy, scoped JSON attachments, and grouped failures/unresolved checks. It uses the published `lintapple@0.1.20` and `playwright@1.63.0` as optional peers; the reviewed upstream repository declares 0.1.23. Normal source checks remain independent of the browser stack.
+- Include an opt-in light/dark, narrow/wide Playwright example. Browser acceptance remains unperformed; non-browser adapter tests do not establish rendered-engine accuracy.
+
+These changes are available in the source checkout for the next release, not in the published `@usualui/lint@0.3.0` package. No source-policy migration or new environment variables are required. Rendered checks require the optional dependencies and the consumer's existing browser/test setup; see [the runtime guide](docs/runtime.md).
+
 ## 0.3.0 — 2026-10-20
 
 - Rebuild the wizard around Manrope, white surfaces, square neutral panels, consistent spacing, and a full-screen control rail / preview layout. Give Usual its own restrained iris accent, lighter dividers, numbered navigation, and outlined wordmark.

@@ -8,6 +8,7 @@
     "node": ">=22.12.0"
   },
   "bin": {
+    "usual-ui": "dist/cli.js",
     "usual-design": "dist/cli.js"
   },
   "files": [
@@ -23,6 +24,7 @@
     "docs/development.md",
     "docs/maintaining.md",
     "docs/publishing.md",
+    "docs/renaming.md",
     "README.md",
     "CONTRIBUTING.md",
     "CODE_OF_CONDUCT.md",
@@ -33,13 +35,16 @@
     "site/README.md",
     "examples/ci.yml",
     "CHANGELOG.md",
-    "THIRD_PARTY_NOTICES.md"
+    "THIRD_PARTY_NOTICES.md",
+    "docs/runtime.md",
+    "docs/numeric-rules.md",
+    "examples/runtime"
   ],
   "scripts": {
     "build": "tsc && vite build --config wizard/vite.config.ts && vite build --config site/vite.config.ts",
     "build:core": "tsc",
-    "typecheck": "tsc --noEmit && tsc -p wizard/tsconfig.json && tsc -p site/tsconfig.json",
-    "test": "npm run test:core && npm run test:wizard",
+    "typecheck": "tsc --noEmit && tsc -p wizard/tsconfig.json && tsc -p site/tsconfig.json && tsc -p examples/tsconfig.json",
+    "test": "npm run test:core && npm run test:wizard && npm run test:site",
     "dev:wizard": "vite --config wizard/vite.config.ts",
     "dev:site": "vite --config site/vite.config.ts",
     "test:core": "tsx --test test/*.test.ts",
@@ -47,7 +52,8 @@
     "verify:package": "npm run build && node scripts/package-smoke.mjs",
     "benchmark": "npm run build:core && node scripts/benchmark.mjs",
     "audit:site": "node dist/cli.js audit --root site --save",
-    "format:check": "prettier --check 'src/**/*.ts' 'test/**/*.ts' 'wizard/src/**/*.{ts,tsx,css}' 'wizard/test/**/*.ts' 'site/src/**/*.{ts,tsx,css}' 'scripts/*.mjs' 'schema/*.json'"
+    "format:check": "prettier --check 'src/**/*.ts' 'test/**/*.ts' 'wizard/src/**/*.{ts,tsx,css}' 'wizard/test/**/*.ts' 'site/src/**/*.{ts,tsx,css}' 'site/test/**/*.ts' 'scripts/*.mjs' 'schema/*.json' 'examples/runtime/*.{ts,json,html}' 'examples/tsconfig.json'",
+    "test:site": "tsx --tsconfig site/tsconfig.json --test site/test/*.test.ts"
   },
   "dependencies": {
     "@babel/parser": "^7.28.0",
@@ -62,9 +68,14 @@
   "devDependencies": {
     "@fontsource-variable/manrope": "^5.3.0",
     "@tailwindcss/vite": "^4.1.0",
+    "@types/markdown-it": "^14.2.0",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "gray-matter": "^4.0.3",
+    "lintapple": "0.1.20",
+    "markdown-it": "^15.0.3",
+    "playwright": "1.63.0",
     "prettier": "^3.9.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -76,14 +87,33 @@
   "packageManager": "npm@10.9.8",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/usual-labs/usual-design.git"
+    "url": "git+https://github.com/usual-labs/usual-ui.git"
   },
   "bugs": {
-    "url": "https://github.com/usual-labs/usual-design/issues"
+    "url": "https://github.com/usual-labs/usual-ui/issues"
   },
-  "homepage": "https://github.com/usual-labs/usual-design#readme",
+  "homepage": "https://github.com/usual-labs/usual-ui#readme",
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
+  },
+  "exports": {
+    "./playwright": {
+      "types": "./dist/playwright.d.ts",
+      "default": "./dist/playwright.js"
+    },
+    "./*": "./*"
+  },
+  "peerDependencies": {
+    "lintapple": "0.1.20",
+    "playwright": "1.63.0"
+  },
+  "peerDependenciesMeta": {
+    "lintapple": {
+      "optional": true
+    },
+    "playwright": {
+      "optional": true
+    }
   }
 }

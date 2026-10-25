@@ -36,4 +36,4 @@ There is no guaranteed response deadline, bounty program, or automated security 
 
 The checker is designed to parse source without executing project code. Normal checks do not call a model or upload source. The wizard is a loopback interface; keep its session URL private and do not expose it through a public tunnel.
 
-An existing coding agent is a separate tool with its own permissions and data handling. Usual Design does not grant trust to that agent or certify everything it generates. See [compatibility](docs/compatibility.md) for the current limits.
+An existing coding agent is a separate tool with its own permissions and data handling. Usual UI does not grant trust to that agent or certify everything it generates. See [compatibility](docs/compatibility.md) for the current limits.

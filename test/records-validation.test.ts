@@ -8,8 +8,8 @@ import { createPlan, saveAudit } from '../src/records.js';
 import { runProject } from '../src/project.js';
 import { categories, type AuditResult, type Finding } from '../src/types.js';
 
-const repairPath = 'docs/usual-design/repairs/example.json';
-const auditPath = 'docs/usual-design/audit.json';
+const repairPath = 'docs/usual-ui/repairs/example.json';
+const auditPath = 'docs/usual-ui/audit.json';
 const digest = 'a'.repeat(64);
 function finding(id = 'finding'): Finding {
   return {
@@ -33,8 +33,8 @@ function plan(): RepairPlan {
     selected: [finding()],
     deferred: [],
     constraints: ['Preserve policy.'],
-    verifyArgv: ['usual-design', 'audit', '--config', 'usual.design.json'],
-    verify: "usual-design audit --config 'usual.design.json'",
+    verifyArgv: ['usual-ui', 'audit', '--config', 'usual.design.json'],
+    verify: "usual-ui audit --config 'usual.design.json'",
   };
 }
 function audit(): AuditResult {
@@ -197,7 +197,7 @@ test('legacy version 1 batches need no configPath and newer batches retain comma
   const record = {
     ...plan(),
     configPath: 'config/design.json',
-    startArgv: ['usual-design', 'verify-plan', '--plan', repairPath],
+    startArgv: ['usual-ui', 'verify-plan', '--plan', repairPath],
   };
   assert.deepEqual(parseRepairRecord(JSON.stringify(record), repairPath), record);
 });

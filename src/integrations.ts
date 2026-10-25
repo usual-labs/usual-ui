@@ -23,10 +23,10 @@ export interface SetupOptions {
   configPath?: string;
 }
 const exec = promisify(execFile);
-const registryPath = '.usual-design/setup.json';
-const start = '<!-- usual-design:begin -->';
-const end = '<!-- usual-design:end -->';
-const section = `${start}\n## Usual Design\n\nRead the project-local usual-design skill for design discovery and approved repairs. Run \`npm run lint:design\` after each completed UI change. It checks active categories only. Use a full audit before activation. Ordinary repairs must not weaken the configured manifest (usual.design.json by default), broaden exclusions, deactivate categories, add exceptions, or delete evidence. Resume selected work from docs/usual-design/ and re-audit stale batches.\n${end}`;
+const registryPath = '.usual-ui/setup.json';
+const start = '<!-- usual-ui:begin -->';
+const end = '<!-- usual-ui:end -->';
+const section = `${start}\n## Usual UI\n\nRead the project-local usual-ui skill for design discovery and approved repairs. Run \`npm run lint:design\` after each completed UI change. It checks active categories only. Use a full audit before activation. Ordinary repairs must not weaken the configured manifest (usual.design.json by default), broaden exclusions, deactivate categories, add exceptions, or delete evidence. Resume selected work from docs/usual-ui/ and re-audit stale batches.\n${end}`;
 const shellQuote = (value: string): string => "'" + value.replaceAll("'", "'\"'\"'") + "'";
 
 /** Adds one JSON property without reformatting existing package text. */
@@ -56,7 +56,7 @@ function addProperty(
 
 function packageScript(source: string, configPath: string): string {
   const data = JSON.parse(source) as { scripts?: Record<string, unknown> };
-  const desired = `usual-design check${configPath === 'usual.design.json' ? '' : ` --config ${shellQuote(configPath)}`}`;
+  const desired = `usual-ui check${configPath === 'usual.design.json' ? '' : ` --config ${shellQuote(configPath)}`}`;
   if (data.scripts?.['lint:design'] === desired) return source;
   if (data.scripts && typeof data.scripts !== 'object')
     throw new Error('package.json scripts must be an object');
@@ -76,10 +76,10 @@ function packageScript(source: string, configPath: string): string {
 }
 
 const runner = (configPath: string) =>
-  `// Managed by Usual Design. Project-local dependencies only; no downloads.\nconst fs = require('node:fs');\nconst path = require('node:path');\nconst { spawnSync } = require('node:child_process');\nconst root = path.dirname(__dirname);\nconst host = process.argv.at(-1);\nif (!['codex', 'claude'].includes(host)) throw Error('Unsupported Usual Design hook host');\nconst own = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).name === '@usualui/lint';\nconst cli = path.join(root, own ? 'dist/cli.js' : 'node_modules/@usualui/lint/dist/cli.js');\nconst result = spawnSync(process.execPath, [cli, 'hook', '--root', root, '--host', host${configPath === 'usual.design.json' ? '' : `, '--config', ${JSON.stringify(configPath)}`}], { cwd: root, input: fs.readFileSync(0), encoding: 'utf8', timeout: 25000, maxBuffer: 1048576 });\nif (result.stdout) process.stdout.write(result.stdout);\nif (result.stderr) process.stderr.write(result.stderr);\nif (result.error) process.stderr.write('Usual Design checker unavailable: ' + result.error.message + '\\n');\nprocess.exit(result.status ?? 1);\n`;
+  `// Managed by Usual UI. Project-local dependencies only; no downloads.\nconst fs = require('node:fs');\nconst path = require('node:path');\nconst { spawnSync } = require('node:child_process');\nconst root = path.dirname(__dirname);\nconst host = process.argv.at(-1);\nif (!['codex', 'claude'].includes(host)) throw Error('Unsupported Usual UI hook host');\nconst own = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).name === '@usualui/lint';\nconst cli = path.join(root, own ? 'dist/cli.js' : 'node_modules/@usualui/lint/dist/cli.js');\nconst result = spawnSync(process.execPath, [cli, 'hook', '--root', root, '--host', host${configPath === 'usual.design.json' ? '' : `, '--config', ${JSON.stringify(configPath)}`}], { cwd: root, input: fs.readFileSync(0), encoding: 'utf8', timeout: 25000, maxBuffer: 1048576 });\nif (result.stdout) process.stdout.write(result.stdout);\nif (result.stderr) process.stderr.write(result.stderr);\nif (result.error) process.stderr.write('Usual UI checker unavailable: ' + result.error.message + '\\n');\nprocess.exit(result.status ?? 1);\n`;
 
 // Both clients run shell commands from the session cwd. Search ancestors so nested sessions work.
-const locateRunner = `let d=process.cwd();const f=require("node:fs"),p=require("node:path");while(!f.existsSync(p.join(d,".usual-design","hook.cjs"))){const n=p.dirname(d);if(n===d)throw Error("Usual Design hook runner not found");d=n}require(p.join(d,".usual-design","hook.cjs"))`;
+const locateRunner = `let d=process.cwd();const f=require("node:fs"),p=require("node:path");while(!f.existsSync(p.join(d,".usual-ui","hook.cjs"))){const n=p.dirname(d);if(n===d)throw Error("Usual UI hook runner not found");d=n}require(p.join(d,".usual-ui","hook.cjs"))`;
 const hookCommand = (host: 'codex' | 'claude') => `node -e '${locateRunner}' ${host}`;
 
 function withHooks(source: string | null, host: 'codex' | 'claude'): string {
@@ -97,7 +97,7 @@ function withHooks(source: string | null, host: 'codex' | 'claude'): string {
     const entries = data.hooks[event] ?? [];
     if (!Array.isArray(entries)) throw new Error(`Existing ${event} hooks must be an array`);
     const owned = entries.filter((entry: unknown) =>
-      JSON.stringify(entry).includes('.usual-design'),
+      /\.usual-(?:ui|design)/.test(JSON.stringify(entry)),
     );
     const desired = {
       ...(event === 'PostToolUse'
@@ -110,7 +110,7 @@ function withHooks(source: string | null, host: 'codex' | 'claude'): string {
       (owned.length !== 1 || JSON.stringify(owned[0]) !== JSON.stringify(desired))
     ) {
       throw new Error(
-        `Existing Usual Design ${event} hook differs; review it manually instead of overwriting`,
+        `Existing Usual UI ${event} hook differs; review it manually instead of overwriting`,
       );
     }
     if (!owned.length) entries.push(desired);
@@ -133,6 +133,10 @@ export async function planSetup(
   const plan: SetupPlan = { root, host, changes: [], conflicts: [], notices: [] };
   let registry: { version: number; files: Record<string, string> } = { version: 1, files: {} };
   try {
+    if ((await readSetupFile(root, '.usual-design/setup.json')) !== null)
+      throw new Error(
+        'Legacy usual-design setup found. Review docs/renaming.md before replacing its managed instructions, skills and hooks; setup will not install duplicate integrations.',
+      );
     const previous = await readSetupFile(root, registryPath);
     if (previous) {
       const parsed = JSON.parse(previous);
@@ -173,24 +177,28 @@ export async function planSetup(
       plan.conflicts.push(String(error));
     }
   }
-  const skill = await readFile(new URL('../skills/usual-design/SKILL.md', import.meta.url), 'utf8');
+  const skill = await readFile(new URL('../skills/usual-ui/SKILL.md', import.meta.url), 'utf8');
   const hosts: ('codex' | 'claude')[] =
     host === 'both' ? ['codex', 'claude'] : host === 'portable' ? [] : [host];
   if (host === 'portable') {
-    await add('docs/usual-design/SKILL.md', skill, true);
+    await add('docs/usual-ui/SKILL.md', skill, true);
     plan.notices.push(
       'Portable skill saved as project documentation; configure your agent manually. No native hooks are claimed.',
     );
   }
   for (const client of hosts) {
     await add(
-      `${client === 'codex' ? '.agents' : '.claude'}/skills/usual-design/SKILL.md`,
+      `${client === 'codex' ? '.agents' : '.claude'}/skills/usual-ui/SKILL.md`,
       skill,
       true,
     );
     const instructions = client === 'codex' ? 'AGENTS.md' : 'CLAUDE.md';
     try {
       const existing = await readSetupFile(root, instructions);
+      if (existing?.includes('<!-- usual-design:'))
+        throw new Error(
+          `${instructions} has legacy usual-design instructions; migrate them manually before setup`,
+        );
       if (existing?.includes(start) || existing?.includes(end)) {
         if (
           existing.split(start).length !== 2 ||
@@ -226,18 +234,18 @@ export async function planSetup(
       );
     }
   }
-  if (options.hooks && hosts.length) await add('.usual-design/hook.cjs', runner(configPath), true);
+  if (options.hooks && hosts.length) await add('.usual-ui/hook.cjs', runner(configPath), true);
   for (const file of ['SKILL.md', 'references/proposal.md', 'references/showcase.md']) {
     const content = await readFile(
-      new URL(`../skills/usual-design-onboarding/${file}`, import.meta.url),
+      new URL(`../skills/usual-ui-onboarding/${file}`, import.meta.url),
       'utf8',
     );
     const destinations =
       host === 'portable'
-        ? ['docs/usual-design/skills']
+        ? ['docs/usual-ui/skills']
         : hosts.map((client) => `${client === 'codex' ? '.agents' : '.claude'}/skills`);
     for (const directory of destinations)
-      await add(`${directory}/usual-design-onboarding/${file}`, content, true);
+      await add(`${directory}/usual-ui-onboarding/${file}`, content, true);
   }
   if (options.npmScript !== false) {
     try {
@@ -289,7 +297,7 @@ async function planCommitHook(
       throw new Error('An existing hook manager was found; add the check there manually');
     const existing = await readSetupFile(plan.root, '.git/hooks/pre-commit');
     const script =
-      '#!/bin/sh\n# Managed by Usual Design: full working-tree check, not a staged-tree guarantee.\nproject_root=$(git rev-parse --show-toplevel) || exit $?\n"$project_root/node_modules/.bin/usual-design" check --root "$project_root"' +
+      '#!/bin/sh\n# Managed by Usual UI: full working-tree check, not a staged-tree guarantee.\nproject_root=$(git rev-parse --show-toplevel) || exit $?\n"$project_root/node_modules/.bin/usual-ui" check --root "$project_root"' +
       (configPath === 'usual.design.json' ? '' : ` --config ${shellQuote(configPath)}`) +
       '\n';
     if (existing !== null && existing !== script)

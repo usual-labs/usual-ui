@@ -1,14 +1,14 @@
-# Usual Design: initial implementation plan
+# Usual UI: initial implementation plan
 
 Status: local implementation and automated proof exist; the full plan is not complete and nothing has been published. See [implementation evidence](../../implementation/progress.md) and [user decisions / pending gates](../../handoffs/needs-armin.md).
 
-Created: 2026-10-19. Source: the Usual Labs / Usual Design grilling session and its read-only documentation research.
+Created: 2026-10-19. Source: the Usual Labs / Usual UI grilling session and its read-only documentation research.
 
 ## Goal and motivation
 
-Usual Labs, at `usual.dev`, will house and distribute open-source developer tools. Its first tool suite is Usual Design: a project-owned design contract, a deterministic linter, an agent-assisted setup workflow, and a local visual onboarding wizard.
+Usual Labs, at `usual.dev`, will house and distribute open-source developer tools. Its first tool suite is Usual UI: a project-owned design contract, a deterministic linter, an agent-assisted setup workflow, and a local visual onboarding wizard.
 
-AI-native developers can already give their agents tokens and shared components, yet new code still drifts: arbitrary values appear, semantic roles are ignored, and existing components are bypassed. Instructions alone do not establish a reliable feedback loop. Usual Design makes explicit design decisions executable, producing failures that a developer or their existing coding agent can understand and repair quickly.
+AI-native developers can already give their agents tokens and shared components, yet new code still drifts: arbitrary values appear, semantic roles are ignored, and existing components are bypassed. Instructions alone do not establish a reliable feedback loop. Usual UI makes explicit design decisions executable, producing failures that a developer or their existing coding agent can understand and repair quickly.
 
 The initial audience is individuals and small-to-medium teams using AI heavily. Existing design systems can be imported; projects without one receive guided discovery and explicit choices. The first promise is enforceable consistency within declared coverage. Passing does not establish beauty, originality, accessibility, or complete visual equivalence.
 
@@ -38,7 +38,7 @@ Unchecked items include both engineering gaps and gates requiring the user or an
 | Integrations | First-class local Codex and Claude Code setup, npm script, opt-in commit hooks, and a basic CI example, all using the same CLI. |
 | Policy changes | Ordinary repair never authorizes broadening rules, exclusions, or activation. Design changes use explicit approval and visible Git diffs. |
 | Licensing/privacy | CLI, schema, wizard, and skills use MIT. Local operation, no required account, and no telemetry in v1. |
-| Website | Usual Labs homepage plus Usual Design installation, documentation, repository links, and a real demonstration at `usual.dev`. |
+| Website | Usual Labs homepage plus Usual UI installation, documentation, repository links, and a real demonstration at `usual.dev`. |
 | Visual direction | Warm neutrals, strong typography, precise borders, one distinctive accent; review concrete visual work before treating it as approved. |
 | Release evidence | Complete journey on the Usual website plus an independent React/Tailwind fixture with different conventions. |
 | Distribution | Prepare public repository/package/docs/demo and seek five external projects completing onboarding, subject to separate publication and outreach approval. |
@@ -76,7 +76,7 @@ These are concrete implementation defaults, not additional product promises. Ver
 
 - One TypeScript/Node CLI package containing the local wizard assets and reusable in-process analysis code; a private website workspace if needed. Avoid splitting every layer into a published package.
 - A JSON manifest, provisionally `usual.design.json`, with a versioned JSON Schema and clear relative-path semantics.
-- A project documentation folder, provisionally `docs/usual-design/`, holding decisions, audit summaries, deferred work, and repair plans. Keep transient generated/cache data separate and ignored.
+- A project documentation folder, provisionally `docs/usual-ui/`, holding decisions, audit summaries, deferred work, and repair plans. Keep transient generated/cache data separate and ignored.
 - Syntax parsers for JS/TS/JSX and CSS, a finite static-value resolver, policy evaluation, diagnostics/reporting, and a small project-file persistence layer with clear responsibilities.
 - A local HTTP server serving a bundled wizard. The wizard consumes the same audit/validation operations as the CLI; it does not implement a second linter.
 - Provisional CLI surfaces: `init`, `audit`, `check`, `wizard`, `activate`, and `setup`. Final flag spelling and npm package names are determined before documenting/installing them. Initialization creates a draft; it does not claim to invent a verified design system.
@@ -94,7 +94,7 @@ These are concrete implementation defaults, not additional product promises. Ver
 | [06 — Visual wizard](06-visual-wizard.md) | Complete local visual onboarding and review journey | 05 |
 | [07 — Agent skills and setup](07-agent-skills-and-setup.md) | Existing-agent discovery/repair workflows and safe installation | 05, 06 |
 | [08 — Enforcement integrations](08-enforcement-integrations.md) | npm, local agent hooks, optional commit hooks, CI | 04, 07 |
-| [09 — Website and documentation](09-website-and-documentation.md) | Usual Labs site, Usual Design docs, real dogfooding | 06–08 |
+| [09 — Website and documentation](09-website-and-documentation.md) | Usual Labs site, Usual UI docs, real dogfooding | 06–08 |
 | [10 — Acceptance and release preparation](10-acceptance-and-release-preparation.md) | Verified artifact and reviewable release materials | 01–09 |
 | [11 — Approved launch and pilots](11-approved-launch-and-pilots.md) | Authorized public release and evidence from external adoption | 10 plus explicit action-specific approval |
 

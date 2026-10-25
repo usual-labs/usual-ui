@@ -1,12 +1,12 @@
 # Announcement draft — unsent and unpublished
 
-Use only after the exact repository, package, website, visual direction, and copy have been approved and the public installation path has been verified. Intended destination: `usual.dev/design/`; it is not a verified deployed URL yet.
+Use only after the exact repository, package, website, visual direction, and copy have been approved and the public installation path has been verified. Intended destination: `usual.dev/ui/`; it is not a verified deployed URL yet.
 
 ## Draft copy
 
 Your coding agent already knows your design tokens. Does the code keep using them?
 
-Usual Design gives React and Tailwind v4 projects a deterministic design feedback loop: approved values, explicit semantic rules, and shared component requirements, checked through one local CLI.
+Usual UI gives React and Tailwind v4 projects a deterministic design feedback loop: approved values, explicit semantic rules, and shared component requirements, checked through one local CLI.
 
 Review your project's contract in a visual wizard, choose what to resolve, and let your existing coding agent repair the selected findings. Activate categories when they're ready; keep deferred work documented in the project.
 

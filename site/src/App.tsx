@@ -5,7 +5,12 @@ import { Docs } from './pages/Docs';
 
 export function App() {
   const path = window.location.pathname.replace(/\/+$/, '');
-  const page = path === '/design/docs' ? 'docs' : path === '/design' ? 'design' : 'labs';
+  const page =
+    path === '/ui/docs' || path === '/design/docs'
+      ? 'docs'
+      : path === '/ui' || path === '/design'
+        ? 'design'
+        : 'labs';
   return (
     <Layout page={page}>
       {page === 'docs' ? <Docs /> : page === 'design' ? <Design /> : <Labs />}

@@ -170,27 +170,4 @@ export async function analyzeProject(
 export function resultExit(result: AuditResult): number {
   return result.errors.length ? 2 : result.findings.length ? 1 : 0;
 }
-export function humanResult(r: AuditResult): string {
-  const lines = [
-    `Usual Design ${r.mode}: ${r.files.length} files`,
-    `Active: ${r.active.join(', ') || 'none — no design enforcement'}`,
-    `Inactive: ${r.inactive.join(', ') || 'none'}`,
-  ];
-  if (r.coverage)
-    lines.push(
-      `Include: ${r.coverage.include.join(', ')}`,
-      `Configured excludes: ${r.coverage.ignore.join(', ') || 'none'}; standard dependency/build exclusions also apply.`,
-      `Exceptions used: ${r.coverage.exceptionsUsed.length}`,
-    );
-  if (r.coverage?.exceptionsUnused !== undefined)
-    lines.push(
-      `Exceptions unused in this run: ${r.coverage.exceptionsUnused.length}; review them in a full audit before removal.`,
-    );
-  for (const e of r.errors) lines.push(`ERROR ${e}`);
-  for (const f of r.findings)
-    lines.push(
-      `${f.file}:${f.line}:${f.column} [${f.ruleId}] ${f.message}${f.expected ? ` Expected: ${f.expected}` : ''}`,
-    );
-  lines.push(`${r.findings.length} findings; ${r.errors.length} operational errors.`);
-  return lines.join('\n');
-}
+export { humanResult } from './reporting.js';

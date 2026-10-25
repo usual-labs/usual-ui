@@ -20,7 +20,7 @@ Use existing parsing and schema-validation dependencies where they reduce correc
 
 - [x] Read current repository/ancestor instructions and inspect all existing files and Git state.
 - [x] Preserve unrelated changes and revise the planned layout if real structure has appeared.
-- [x] Confirm the project root is `usual-design` under the current Usual workspace.
+- [x] Confirm the project root is `usual-ui` under the current Usual workspace.
 - [x] Confirm this implementation session authorizes code changes; planning alone is not that authorization.
 - [x] Decide whether an existing Git repository owns the project before creating repository metadata; do not create a nested repository accidentally.
 - [ ] Record the chosen Node runtime range using maintained versions and actual CI availability.

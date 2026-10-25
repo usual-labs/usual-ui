@@ -405,10 +405,10 @@ test('audit saves preserve edited human notes and repair progress follows moved 
     const { saveAudit } = await import('../src/records.js');
     await saveAudit(root, moved);
     const progress = JSON.parse(
-      await readFile(join(root, 'docs/usual-design/repair-progress.json'), 'utf8'),
+      await readFile(join(root, 'docs/usual-ui/repair-progress.json'), 'utf8'),
     );
     assert.equal(progress.batches[0].findings[0].status, 'still-reported');
-    const md = join(root, 'docs/usual-design/audit.md');
+    const md = join(root, 'docs/usual-ui/audit.md');
     await writeFile(md, (await readFile(md, 'utf8')) + '\nPersonal note');
     await assert.rejects(saveAudit(root, moved), /non-generated changes/);
     assert.ok((await readFile(md, 'utf8')).endsWith('Personal note'));

@@ -114,7 +114,7 @@ test('activation leaves policy untouched when durable receipt preparation fails'
     );
     assert.equal(attemptedReceipt, true);
     assert.equal(await readFile(manifestPath, 'utf8'), before);
-    const records = await readdir(path.join(root, 'docs/usual-design'));
+    const records = await readdir(path.join(root, 'docs/usual-ui'));
     assert.deepEqual(
       records.filter((name) => name.startsWith('activation-')),
       [],
@@ -145,7 +145,7 @@ test('a prepared activation receipt is distinguishable from a failed policy comm
     assert.equal(syncedFiles, 2);
     assert.equal(await readFile(manifestPath, 'utf8'), newer);
     assert.deepEqual(JSON.parse(newer).active, []);
-    const directory = path.join(root, 'docs/usual-design');
+    const directory = path.join(root, 'docs/usual-ui');
     const receipts = (await readdir(directory)).filter((name) =>
       /^activation-.*\.json$/.test(name),
     );
@@ -175,7 +175,7 @@ test('repair verification preserves configuration paths as argv data and safe sh
       audit.snapshot,
       configPath,
     );
-    const expected = ['usual-design', 'audit', '--config', configPath];
+    const expected = ['usual-ui', 'audit', '--config', configPath];
     assert.deepEqual(plan.verifyArgv, expected);
     assert.deepEqual(
       JSON.parse(await readFile(path.join(root, planPath), 'utf8')).verifyArgv,
@@ -185,7 +185,7 @@ test('repair verification preserves configuration paths as argv data and safe sh
     const capture = path.join(root, 'captured-argv.json');
     await mkdir(bin);
     await writeFile(
-      path.join(bin, 'usual-design'),
+      path.join(bin, 'usual-ui'),
       '#!/usr/bin/env node\nrequire("node:fs").writeFileSync(process.env.USUAL_TEST_ARGV_CAPTURE, JSON.stringify(process.argv.slice(2)));\n',
       { mode: 0o755 },
     );

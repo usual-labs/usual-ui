@@ -1,7 +1,7 @@
 # Open-source contribution documentation research
 
 Researched: 2026-10-20. Scope: contribution and community documentation for the
-unreleased Usual Design repository. Sources are GitHub's documentation, Open Source
+unreleased Usual UI repository. Sources are GitHub's documentation, Open Source
 Guides, Contributor Covenant, and the actual files maintained by four relevant
 developer tools. Repository examples below are pinned to the commits inspected.
 This is research and a recommendation, not proof that GitHub settings, reporting
@@ -12,7 +12,7 @@ channels, or a public release exist.
 Make the repository easy to understand, contribute to, and maintain. Credibility
 comes from accurate commands, explicit project boundaries, actionable reports, and
 honest review expectations. Do not imitate an established project's organizational
-machinery when Usual Design does not have it. Open Source Guides recommends
+machinery when Usual UI does not have it. Open Source Guides recommends
 documenting project goals, accepted contributions, communication expectations,
 and how tests work, while keeping that documentation current. [1]
 
@@ -25,7 +25,7 @@ that an operating policy or reporting channel works. [2][3]
 
 ## Patterns from working projects
 
-| Example                                               | What the source does                                                                                                                                                                                                      | Adopt for Usual Design                                                                                                                                                                                                                                                         |
+| Example                                               | What the source does                                                                                                                                                                                                      | Adopt for Usual UI                                                                                                                                                                                                                                                         |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [ESLint contribution entry point][7]                  | Routes people to distinct bug, rule, change, code, conduct, security, and AI instructions. It also describes its own foundation CLA.                                                                                      | Keep the main contribution guide navigable. Separate reproduction guidance from implementation detail. Do not inherit ESLint's CLA, foundation governance, or advisory URL.                                                                                                    |
 | [Prettier contribution guide][8] and [PR template][9] | Starts with working setup commands, explains meaningful tests, states scope limits, and asks for tests and documentation where applicable. Its AI policy requires understanding, testing, and ability to explain changes. | Give commands matching this repository's scripts. Require regression evidence for changed behavior and documentation for public contracts. Keep checklists conditional, so a prose correction does not pretend to need runtime tests.                                          |
@@ -33,7 +33,7 @@ that an operating policy or reporting channel works. [2][3]
 | [Knip contribution guide][11] and [bug form][12]      | Welcomes multiple contribution types, requests one issue or feature per PR, suggests discussing uncertain scope first, and requires a minimal reproduction. It links a separate development guide.                        | Allow direct small fixes; discuss new syntax, frameworks, or policy semantics before substantial work. Ask for minimal source, manifest, commands, versions, and expected/actual output. Permit inline sanitized reproduction instead of requiring a public repository upload. |
 
 These examples have different sizes and processes. None is a universal template.
-Usual Design should explain its own invariants: deterministic local analysis,
+Usual UI should explain its own invariants: deterministic local analysis,
 project-owned policy, explicit unknown coverage, activation semantics, and repairs
 that cannot silently weaken policy. Those are concrete review criteria, unlike a
 generic instruction to “follow best practices.”
@@ -112,7 +112,7 @@ expectations; its example times are examples, not required deadlines. [1]
 
 ## AI-assisted contributions
 
-Usual Design is explicitly intended for developers using existing coding agents.
+Usual UI is explicitly intended for developers using existing coding agents.
 Welcome AI-assisted contributions while keeping the submitting person responsible
 for understanding the change, inspecting generated code, respecting licenses,
 running relevant checks, and responding to review with accurate evidence.
@@ -120,7 +120,7 @@ running relevant checks, and responding to review with accurate evidence.
 The compared projects differ: ESLint requires disclosure, human responses, and an
 accepted issue for AI-generated PRs; Prettier requires understanding, testing,
 review, and clear explanations. These are project-specific policies, not universal
-open-source requirements. [8][9][14] Usual Design should adopt accountability and
+open-source requirements. [8][9][14] Usual UI should adopt accountability and
 quality requirements without inventing an accepted-issue approval apparatus.
 Never request private prompts or transcripts as a substitute for reviewable code
 and proof.

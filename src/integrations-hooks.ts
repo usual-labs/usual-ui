@@ -14,23 +14,23 @@ type Checker = (root: string, mode: 'check') => Promise<AuditResult>;
 function message(result: AuditResult): string {
   const scope = `Active: ${result.active.join(', ') || 'none'}. Inactive (unchecked): ${result.inactive.join(', ') || 'none'}.`;
   if (result.errors.length)
-    return `Usual Design CHECKER ERROR. ${scope}\n${result.errors.slice(0, 4).join('\n')}\nRun npm run lint:design for the complete error. Do not weaken policy to bypass it.`.slice(
+    return `Usual UI CHECKER ERROR. ${scope}\n${result.errors.slice(0, 4).join('\n')}\nRun npm run lint:design for the complete error. Do not weaken policy to bypass it.`.slice(
       0,
       5500,
     );
-  if (!result.findings.length) return `Usual Design passed. ${scope}`;
+  if (!result.findings.length) return `Usual UI passed. ${scope}`;
   const examples = result.findings.slice(0, 6).map((finding) => {
     const expected = finding.expected ? ` Expected: ${finding.expected}` : '';
     return `${finding.file}:${finding.line}:${finding.column} [${finding.ruleId}] ${finding.message}${expected}`;
   });
-  return `Usual Design FAILED (${result.findings.length} findings). ${scope}\n${examples.join('\n')}\nRun npm run lint:design for the full project check. Repair only authorized application code; do not broaden policy, exclusions, exceptions, or deactivate categories.`.slice(
+  return `Usual UI FAILED (${result.findings.length} findings). ${scope}\n${examples.join('\n')}\nRun npm run lint:design for the full project check. Repair only authorized application code; do not broaden policy, exclusions, exceptions, or deactivate categories.`.slice(
     0,
     5500,
   );
 }
 
 function failedProtocol(reason: string): HookResponse {
-  const text = `Usual Design CHECKER ERROR: ${reason}. No successful check has been established. Run npm run lint:design manually.`;
+  const text = `Usual UI CHECKER ERROR: ${reason}. No successful check has been established. Run npm run lint:design manually.`;
   return {
     exitCode: 0,
     checkExitCode: 2,

@@ -100,7 +100,7 @@ export function PolicyReview({
       <div className="section-heading">
         <div>
           <p className="eyebrow">02 · Make the intent explicit</p>
-          <h2 id="policy-title">Review your design contract</h2>
+          <h2 id="policy-title">Your design contract</h2>
         </div>
         <span className={`pill ${dirty ? 'notice' : ''}`}>
           {dirty ? 'Unsaved draft' : state.manifest ? 'Saved policy' : 'No manifest yet'}
@@ -118,40 +118,46 @@ export function PolicyReview({
       </p>
       {!state.manifest && (
         <div className="callout">
-          Ask your existing coding agent to use the Usual Design setup skill and draft a manifest
-          from the inventory. Paste its JSON here for validation and review. New categories should
-          begin inactive.
+          Ask your existing coding agent to use the Usual UI setup skill and draft a manifest from
+          the inventory. Paste its JSON here for validation and review. New categories should begin
+          inactive.
         </div>
       )}
       {parsedDraft && (
-        <PolicyControls
-          manifest={parsedDraft}
-          tokens={state.inventory?.tokens ?? []}
+        <details className="workshop-disclosure" open={!state.manifest}>
+          <summary>Edit allowed values & rules</summary>
+          <PolicyControls
+            manifest={parsedDraft}
+            tokens={state.inventory?.tokens ?? []}
+            disabled={pending || review}
+            change={(manifest) => {
+              setDraft(stringify(manifest));
+              setError('');
+            }}
+          />
+        </details>
+      )}
+      <details className="workshop-disclosure" open={!parsedDraft}>
+        <summary>Inspect or edit the full manifest</summary>
+        <label htmlFor={editorId}>Manifest JSON</label>
+        <p id={helpId} className="muted">
+          Changes to this file are design-policy decisions. Ordinary repair batches must preserve
+          it. Saving validates the full schema and invalidates the previous audit.
+        </p>
+        <textarea
+          id={editorId}
+          aria-describedby={helpId}
+          className="code-editor"
+          spellCheck={false}
+          value={draft}
           disabled={pending || review}
-          change={(manifest) => {
-            setDraft(stringify(manifest));
+          onChange={(event) => {
+            setDraft(event.target.value);
             setError('');
           }}
+          placeholder="Paste the manifest proposed by your agent"
         />
-      )}
-      <label htmlFor={editorId}>Manifest JSON</label>
-      <p id={helpId} className="muted">
-        Changes to this file are design-policy decisions. Ordinary repair batches must preserve it.
-        Saving validates the full schema and invalidates the previous audit.
-      </p>
-      <textarea
-        id={editorId}
-        aria-describedby={helpId}
-        className="code-editor"
-        spellCheck={false}
-        value={draft}
-        disabled={pending || review}
-        onChange={(event) => {
-          setDraft(event.target.value);
-          setError('');
-        }}
-        placeholder="Paste the manifest proposed by your agent"
-      />
+      </details>
       {error && (
         <p role="alert" className="error-text">
           {error}

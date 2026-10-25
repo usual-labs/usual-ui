@@ -26,32 +26,100 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-## Runtime dependency metadata
+## Source-checker runtime dependency metadata
 
 This inventory was checked against the lockfile installation on 2026-10-20. Runtime dependencies are installed as separate npm packages with their original license/notice files; those licenses continue to apply independently of this project's MIT license. Regenerate and review the inventory when updating the lockfile. Apache-2.0, BSD-3-Clause, BlueOak-1.0.0, ISC, and MIT are permissive licenses; preserve required upstream notices when redistributing.
 
-| Package | Version | License |
-| --- | --- | --- |
-| @babel/helper-string-parser | 7.29.7 | MIT |
-| @babel/helper-validator-identifier | 7.29.7 | MIT |
-| @babel/parser | 7.29.9 | MIT |
-| @babel/types | 7.29.8 | MIT |
-| ajv | 8.20.0 | MIT |
-| balanced-match | 4.0.4 | MIT |
-| brace-expansion | 5.0.12 | MIT |
-| class-variance-authority | 0.7.1 | Apache-2.0 |
-| clsx | 2.1.1 | MIT |
-| fast-deep-equal | 3.1.3 | MIT |
-| fast-uri | 3.1.8 | BSD-3-Clause |
-| json-schema-traverse | 1.0.0 | MIT |
-| jsonc-parser | 3.3.1 | MIT |
-| minimatch | 10.2.6 | BlueOak-1.0.0 |
-| nanoid | 3.3.20 | MIT |
-| picocolors | 1.1.1 | ISC |
-| postcss | 8.5.31 | MIT |
-| require-from-string | 2.0.2 | MIT |
-| source-map-js | 1.2.2 | BSD-3-Clause |
-| tailwind-merge | 3.7.0 | MIT |
+| Package                            | Version | License       |
+| ---------------------------------- | ------- | ------------- |
+| @babel/helper-string-parser        | 7.29.7  | MIT           |
+| @babel/helper-validator-identifier | 7.29.7  | MIT           |
+| @babel/parser                      | 7.29.9  | MIT           |
+| @babel/types                       | 7.29.8  | MIT           |
+| ajv                                | 8.20.0  | MIT           |
+| balanced-match                     | 4.0.4   | MIT           |
+| brace-expansion                    | 5.0.12  | MIT           |
+| class-variance-authority           | 0.7.1   | Apache-2.0    |
+| clsx                               | 2.1.1   | MIT           |
+| fast-deep-equal                    | 3.1.3   | MIT           |
+| fast-uri                           | 3.1.8   | BSD-3-Clause  |
+| json-schema-traverse               | 1.0.0   | MIT           |
+| jsonc-parser                       | 3.3.1   | MIT           |
+| minimatch                          | 10.2.6  | BlueOak-1.0.0 |
+| nanoid                             | 3.3.20  | MIT           |
+| picocolors                         | 1.1.1   | ISC           |
+| postcss                            | 8.5.31  | MIT           |
+| require-from-string                | 2.0.2   | MIT           |
+| source-map-js                      | 1.2.2   | BSD-3-Clause  |
+| tailwind-merge                     | 3.7.0   | MIT           |
+
+## Optional rendered-check dependencies
+
+The current source checkout's optional Playwright entry point reuses separately
+installed packages. Their engines are not bundled into the source CLI or wizard.
+The following metadata and notices were checked against the installed lockfile
+packages on 2026-10-22. These optional dependencies are distinct from the
+source-checker runtime dependencies above.
+
+| Package         | Version | License    | Installed license/notice files                                                               |
+| --------------- | ------- | ---------- | -------------------------------------------------------------------------------------------- |
+| lintapple       | 0.1.20  | MIT        | `lintapple/LICENSE`                                                                          |
+| playwright      | 1.63.0  | Apache-2.0 | `playwright/LICENSE`, `playwright/NOTICE`, `playwright/ThirdPartyNotices.txt`                |
+| playwright-core | 1.63.0  | Apache-2.0 | `playwright-core/LICENSE`, `playwright-core/NOTICE`, `playwright-core/ThirdPartyNotices.txt` |
+| axe-core        | 4.14.0  | MPL-2.0    | `axe-core/LICENSE`, `axe-core/LICENSE-3RD-PARTY.txt`, source copyright header                |
+
+Paths above are relative to `node_modules/` in an installation containing the
+optional peers. Preserve each package's original license and third-party notices
+when redistributing it. axe-core retains its Mozilla Public License 2.0 terms;
+it is not relicensed under Usual UI's MIT license. The full license is supplied
+in its package and at [Mozilla](https://www.mozilla.org/MPL/2.0/).
+
+The integration uses published lintapple 0.1.20; the separately reviewed upstream
+repository declared 0.1.23. Reporting and site specimens were implemented within
+Usual's existing architecture rather than copied from the upstream demonstration.
+
+### lintapple
+
+MIT License
+
+Copyright (c) 2026 Gavin Holtzapple
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+### Playwright notice
+
+Playwright
+
+Copyright (c) Microsoft Corporation
+
+This software contains code derived from the Puppeteer project
+(https://github.com/puppeteer/puppeteer), available under the Apache 2.0 license
+(https://github.com/puppeteer/puppeteer/blob/master/LICENSE).
+
+### axe-core copyright
+
+Copyright (c) 2015 - 2026 Deque Systems, Inc.
+
+The installed source header identifies Mozilla Public License 2.0 and requires
+that its entire copyright notice remain in every distributed copy or file
+containing substantial portions of that source code. Its original header,
+`LICENSE`, and `LICENSE-3RD-PARTY.txt` remain in the separate dependency package.
 
 ## Manrope Variable
 
@@ -61,8 +129,8 @@ This Font Software is licensed under the SIL Open Font License, Version 1.1.
 This license is copied below, and is also available with a FAQ at:
 http://scripts.sil.org/OFL
 
+---
 
------------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
 -----------------------------------------------------------
 
@@ -107,32 +175,32 @@ a copy of the Font Software, to use, study, copy, merge, embed, modify,
 redistribute, and sell modified and unmodified copies of the Font
 Software, subject to the following conditions:
 
-1) Neither the Font Software nor any of its individual components,
-in Original or Modified Versions, may be sold by itself.
+1. Neither the Font Software nor any of its individual components,
+   in Original or Modified Versions, may be sold by itself.
 
-2) Original or Modified Versions of the Font Software may be bundled,
-redistributed and/or sold with any software, provided that each copy
-contains the above copyright notice and this license. These can be
-included either as stand-alone text files, human-readable headers or
-in the appropriate machine-readable metadata fields within text or
-binary files as long as those fields can be easily viewed by the user.
+2. Original or Modified Versions of the Font Software may be bundled,
+   redistributed and/or sold with any software, provided that each copy
+   contains the above copyright notice and this license. These can be
+   included either as stand-alone text files, human-readable headers or
+   in the appropriate machine-readable metadata fields within text or
+   binary files as long as those fields can be easily viewed by the user.
 
-3) No Modified Version of the Font Software may use the Reserved Font
-Name(s) unless explicit written permission is granted by the corresponding
-Copyright Holder. This restriction only applies to the primary font name as
-presented to the users.
+3. No Modified Version of the Font Software may use the Reserved Font
+   Name(s) unless explicit written permission is granted by the corresponding
+   Copyright Holder. This restriction only applies to the primary font name as
+   presented to the users.
 
-4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
-Software shall not be used to promote, endorse or advertise any
-Modified Version, except to acknowledge the contribution(s) of the
-Copyright Holder(s) and the Author(s) or with their explicit written
-permission.
+4. The name(s) of the Copyright Holder(s) or the Author(s) of the Font
+   Software shall not be used to promote, endorse or advertise any
+   Modified Version, except to acknowledge the contribution(s) of the
+   Copyright Holder(s) and the Author(s) or with their explicit written
+   permission.
 
-5) The Font Software, modified or unmodified, in part or in whole,
-must be distributed entirely under this license, and must not be
-distributed under any other license. The requirement for fonts to
-remain under this license does not apply to any document created
-using the Font Software.
+5. The Font Software, modified or unmodified, in part or in whole,
+   must be distributed entirely under this license, and must not be
+   distributed under any other license. The requirement for fonts to
+   remain under this license does not apply to any document created
+   using the Font Software.
 
 TERMINATION
 This license becomes null and void if any of the above conditions are

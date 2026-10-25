@@ -1,11 +1,11 @@
-# Usual Design implementation evidence
+# Usual UI implementation evidence
 
 Latest onboarding update (2026-10-20): see [agent-led onboarding 0.2](onboarding-0.2.md)
 for the dedicated skill, proposal compiler, guided preview, and current local
 proof. The phase evidence below is the original implementation snapshot; later
 repository/npm release receipts supersede its historical unpublished status.
 
-Updated: 2026-10-20. Candidate: `@usual/design-lint@0.1.0`; executable: `usual-design`.
+Updated: 2026-10-20. Candidate: `@usual/design-lint@0.1.0`; executable: `usual-ui`.
 
 ## Current outcome
 
@@ -45,10 +45,10 @@ Items needing Armin are separated in [needs-armin](../handoffs/needs-armin.md). 
 
 Local environment: macOS Darwin 25.5.0 arm64, Apple M4 Pro, Node `22.23.2`, npm `10.9.8`. Package runtime declares Node `>=22.12.0`. Tested shell integration is POSIX/macOS. Linux CI is configured but has not run remotely; Windows hook behavior is unverified.
 
-Transient machine output is ignored under `.usual-design/artifacts/`:
+Transient machine output is ignored under `.usual-ui/artifacts/`:
 
 - `tests-final.txt`: latest complete automated suite output.
-- `package-smoke.json` and `usual-design-lint-0.1.0.tgz`: exact local packed candidate, integrity and installed-artifact proof.
+- `package-smoke.json` and `usual-ui-lint-0.1.0.tgz`: exact local packed candidate, integrity and installed-artifact proof.
 - `benchmark.json`: fixture dimensions, hardware/runtime/dependencies and separate process measurements.
 - `runtime-dependencies.json`: runtime license inventory used for `THIRD_PARTY_NOTICES.md`.
 
@@ -66,7 +66,7 @@ Final aggregate run passed after the final source changes:
 | Production dependency audit | Zero vulnerabilities. |
 | Local Markdown links | 29 Markdown files checked; no missing local links before the final checklist-only edits. |
 
-Packed artifact: `.usual-design/artifacts/usual-design-lint-0.1.0.tgz`; 77 files, 653,678 bytes unpacked. Integrity:
+Packed artifact: `.usual-ui/artifacts/usual-ui-lint-0.1.0.tgz`; 77 files, 653,678 bytes unpacked. Integrity:
 
 ```text
 sha512-SLxvs7qbE7slab7IiHGj94S8wfcDYOYO29mY5BNVRPmtsWTBoVozBqoWnTnSZxbOthOwByMrD5bOsnt8BhrX2w==
@@ -83,7 +83,7 @@ Hook timings invoke generated protocol handlers directly; they do not include or
 
 ## Run, test, and inspect
 
-From the `usual-design` folder:
+From the `usual-ui` folder:
 
 ```sh
 npm ci

@@ -1,6 +1,6 @@
 # Agent and enforcement integrations
 
-Every entry point invokes the same full-project `usual-design check`. Only active categories are enforced; inactive categories remain explicitly unchecked. Full audits also inspect drafted inactive categories. Native hooks and commit hooks supplement the check; CI validates the actual committed source.
+Every entry point invokes the same full-project `usual-ui check`. Only active categories are enforced; inactive categories remain explicitly unchecked. Full audits also inspect drafted inactive categories. Native hooks and commit hooks supplement the check; CI validates the actual committed source.
 
 ## Local setup
 
@@ -8,32 +8,32 @@ Install the published `@usualui/lint` package in your target project. Review pro
 
 ```sh
 npm install --save-dev @usualui/lint
-npx --no-install usual-design setup --host both
-npx --no-install usual-design setup --host both --write
+npx --no-install usual-ui setup --host both
+npx --no-install usual-ui setup --host both --write
 ```
 
 Use `--host codex`, `--host claude`, or `--host portable` instead of `both` when appropriate. The preview reports exact file contents, conflicts, and native trust requirements. `--write` explicitly applies the reviewed project-local setup. Nothing is installed globally, and setup never downloads a second CLI version.
 
 If the project has no manifest yet, start with the [agent onboarding prompt](../README.md#quick-start). Setup includes both the ongoing repair skill and the dedicated onboarding skill with its proposal reference. One-off npx use does not install the dependency needed by native hooks. For source development, you can still install a verified local tarball instead of the registry version.
 
-Codex receives `.agents/skills/usual-design/SKILL.md` and a bounded `AGENTS.md` section. Claude Code receives `.claude/skills/usual-design/SKILL.md` and a bounded `CLAUDE.md` section. These project locations follow the [Codex customization documentation](https://learn.chatgpt.com/docs/customization/overview#skills) and [Claude Code skill documentation](https://code.claude.com/docs/en/skills), checked on 19 October 2026. Portable setup saves the shared skill in `docs/usual-design/SKILL.md` for manual use with another agent. The same maintained skill content is used by all hosts.
+Codex receives `.agents/skills/usual-ui/SKILL.md` and a bounded `AGENTS.md` section. Claude Code receives `.claude/skills/usual-ui/SKILL.md` and a bounded `CLAUDE.md` section. These project locations follow the [Codex customization documentation](https://learn.chatgpt.com/docs/customization/overview#skills) and [Claude Code skill documentation](https://code.claude.com/docs/en/skills), checked on 19 October 2026. Portable setup saves the shared skill in `docs/usual-ui/SKILL.md` for manual use with another agent. The same maintained skill content is used by all hosts.
 
-Setup adds `"lint:design": "usual-design check"` to `package.json`, preserving its other text. A conflicting script name, custom same-named skill, edited managed section, invalid configuration, or symlink path stops application and requires manual review. Ownership hashes in `.usual-design/setup.json` distinguish an unchanged generated file from a user-edited one. Repeating setup is stable. Concurrent file changes invalidate a preview. Each file replacement is atomic; an interrupted multi-file setup can be rerun after inspecting and clearing its stale setup lock.
+Setup adds `"lint:design": "usual-ui check"` to `package.json`, preserving its other text. A conflicting script name, custom same-named skill, edited managed section, invalid configuration, or symlink path stops application and requires manual review. Ownership hashes in `.usual-ui/setup.json` distinguish an unchanged generated file from a user-edited one. Repeating setup is stable. Concurrent file changes invalidate a preview. Each file replacement is atomic; an interrupted multi-file setup can be rerun after inspecting and clearing its stale setup lock.
 
 ## Discovery and approved repairs
 
 The skill helps the existing agent inventory Tailwind v4 tokens and shared components, propose a manifest, and guide users through the visual wizard. It keeps observed code, proposed policy, and approved policy distinct. A draft manifest or repair batch does not imply user approval.
 
-The wizard writes selected repairs into `docs/usual-design/` and supplies a short instruction pointing to the saved batch. The agent checks approval and freshness before editing. It reaudits changed source or policy, preserves unrelated work, and repairs only the selected scope. Ordinary repairs cannot broaden allowed values, add exceptions, change coverage, deactivate categories, or delete evidence. Intentional policy changes use a separate reviewed workflow. Hooks never grant additional repair authority.
+The wizard writes selected repairs into `docs/usual-ui/` and supplies a short instruction pointing to the saved batch. The agent checks approval and freshness before editing. It reaudits changed source or policy, preserves unrelated work, and repairs only the selected scope. Ordinary repairs cannot broaden allowed values, add exceptions, change coverage, deactivate categories, or delete evidence. Intentional policy changes use a separate reviewed workflow. Hooks never grant additional repair authority.
 
 ## Optional native hooks
 
 ```sh
-npx --no-install usual-design setup --host both --hooks
-npx --no-install usual-design setup --host both --hooks --write
+npx --no-install usual-ui setup --host both --hooks
+npx --no-install usual-ui setup --host both --hooks --write
 ```
 
-This adds native `PostToolUse` and `Stop` command hooks to `.codex/hooks.json` and/or `.claude/settings.json`, plus `.usual-design/hook.cjs`. Existing unrelated hook handlers and settings remain in place. Codex inline `[hooks]` configuration conflicts with a separate hook file, so setup refuses that combination and asks you to extend the existing configuration manually.
+This adds native `PostToolUse` and `Stop` command hooks to `.codex/hooks.json` and/or `.claude/settings.json`, plus `.usual-ui/hook.cjs`. Existing unrelated hook handlers and settings remain in place. Codex inline `[hooks]` configuration conflicts with a separate hook file, so setup refuses that combination and asks you to extend the existing configuration manually.
 
 The generated command requires a POSIX shell and Node 22+. It finds the project runner from the current directory or its ancestors, including nested directories containing spaces, then invokes the **locally installed** CLI against that project root. The runner has a 25-second subprocess timeout; the native handler has a 30-second timeout. There are no package downloads, model calls, persisted retry state, or background repair agents.
 
@@ -50,8 +50,8 @@ Protocol references checked on 19 October 2026: [Codex hooks](https://learn.chat
 ## Optional commit hook
 
 ```sh
-npx --no-install usual-design setup --host portable --commit-hook
-npx --no-install usual-design setup --host portable --commit-hook --write
+npx --no-install usual-ui setup --host portable --commit-hook
+npx --no-install usual-ui setup --host portable --commit-hook --write
 ```
 
 Automatic installation is limited to a project at its Git repository root with no existing hook manager, custom `core.hooksPath`, worktree-external hooks, or pre-commit script. It uses native Git hooks and adds no dependency. If a hook mechanism already exists, add `npm run lint:design` to that mechanism after reviewing its ordering and exit behavior; setup does not replace it or change global Git configuration.
@@ -68,4 +68,4 @@ Make the CI job required through your repository settings if desired. Consider r
 
 Rerun the preview after a tool update. Unmodified tool-owned skill/runner files can update; custom edits require review. Setup never silently replaces edited instructions or hooks.
 
-To remove an integration, review the version-control diff and remove only the bounded `usual-design:begin` / `usual-design:end` instruction section, the corresponding `usual-design` skill folder, and the exact generated hook handlers. Preserve all unrelated hooks/settings. Remove `lint:design` only if it still contains `usual-design check`, and remove the generated Git hook only if its contents are still the Usual-owned script. Remove `.usual-design/hook.cjs` after no host references it. The ownership record identifies generated files; do not delete project audit, decision, or repair history as part of integration removal.
+To remove an integration, review the version-control diff and remove only the bounded `usual-ui:begin` / `usual-ui:end` instruction section, the corresponding `usual-ui` skill folder, and the exact generated hook handlers. Preserve all unrelated hooks/settings. Remove `lint:design` only if it still contains `usual-ui check`, and remove the generated Git hook only if its contents are still the Usual-owned script. Remove `.usual-ui/hook.cjs` after no host references it. The ownership record identifies generated files; do not delete project audit, decision, or repair history as part of integration removal.

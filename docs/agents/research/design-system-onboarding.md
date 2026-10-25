@@ -1,7 +1,7 @@
 # Design-system foundations for guided onboarding
 
 Researched: 2026-10-20. Scope: established design-system conventions and their
-application to Usual Design's agent-assisted onboarding. Sources below are
+application to Usual UI's agent-assisted onboarding. Sources below are
 official documentation, specifications, and first-party implementation guides.
 This document recommends product behavior; it is not evidence that every
 recommendation is implemented or that an application passes accessibility checks.
@@ -25,12 +25,12 @@ Keep three separate artifacts:
 
 The proposal can be rich. The manifest should remain a compact, enforceable
 contract, with no repeated file inventory or explanations of every decision.
-This separation is a Usual Design architecture recommendation, not a format
+This separation is a Usual UI architecture recommendation, not a format
 prescribed by the systems below.
 
 ## What established systems teach us
 
-| Source | Verified convention | Adaptation for Usual Design |
+| Source | Verified convention | Adaptation for Usual UI |
 | --- | --- | --- |
 | Material's first-party web theming guides | Color roles map to components and pair surface colors with content colors. Typography combines family, size, line height, and weight into purposeful styles. [1][2] | Review color pairs and complete type styles. Avoid picking a foreground or font size independently of its context. |
 | Atlassian Design System | Color names communicate property, semantic role, emphasis, and interaction state. Brand, danger, information, and neutral are purposes; interchangeable decorative accents have a different meaning. [3] | Recommend from source usage and token meaning. Preserve states and do not map every blue value to the brand role. |
@@ -124,7 +124,7 @@ GOV.UK recommends focused questions, explanations for why information is needed,
 back navigation, and preserving previous answers. Its review pattern gives
 users a final opportunity to change answers and clearly identifies the final
 submission action. Those principles support this journey; the precise category
-order above is Usual Design's choice, not a tested external standard. [10][11]
+order above is Usual UI's choice, not a tested external standard. [10][11]
 
 Each category needs a visible **defer** option. Deferring is not approval and must
 not count as clean coverage. For an already-active category, a new onboarding

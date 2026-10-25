@@ -1,4 +1,4 @@
-# Phase 09 — Usual Labs website, Usual Design docs, and dogfooding
+# Phase 09 — Usual Labs website, Usual UI docs, and dogfooding
 
 Status: implemented locally in part; unchecked scope and evidence remain open. [Implementation evidence](../../implementation/progress.md) · [User decisions and pending gates](../../handoffs/needs-armin.md). Depends on: [wizard](06-visual-wizard.md), [agent setup](07-agent-skills-and-setup.md), and [integrations](08-enforcement-integrations.md). Next: [acceptance and release preparation](10-acceptance-and-release-preparation.md).
 
@@ -6,11 +6,11 @@ A provisional static React/Tailwind site, source-build docs, proposed inactive m
 
 ## Outcome
 
-Create the initial public-facing Usual Labs experience centered on its first useful tool. Make Usual Design understandable, installable, and reviewable, and use the website as a real project for the complete onboarding/enforcement journey. Prepare deployment artifacts without publishing until authorized.
+Create the initial public-facing Usual Labs experience centered on its first useful tool. Make Usual UI understandable, installable, and reviewable, and use the website as a real project for the complete onboarding/enforcement journey. Prepare deployment artifacts without publishing until authorized.
 
 ## Product and visual direction
 
-Usual Labs is an umbrella for open-source tools; the initial site does not need a fabricated catalog. Usual Design gets a clear product page, documentation, and a demonstration of a real failure/repair loop.
+Usual Labs is an umbrella for open-source tools; the initial site does not need a fabricated catalog. Usual UI gets a clear product page, documentation, and a demonstration of a real failure/repair loop.
 
 Use warm neutral surfaces, strong typography, precise borders, and one distinctive accent. Lead with concrete code, diagnostics, and usable examples. Make a reviewable visual proposal before treating specific colors/type/layout as approved. A clean token system is necessary but is not itself proof of visual quality.
 
@@ -18,7 +18,7 @@ Use warm neutral surfaces, strong typography, precise borders, and one distincti
 
 ### Establish site scope and information architecture
 
-- [x] Define the Usual Labs homepage and the Usual Design product/documentation paths.
+- [x] Define the Usual Labs homepage and the Usual UI product/documentation paths.
 - [x] Write concise positioning for the audience, problem, deterministic promise, and supported stack.
 - [x] Explain what the tool enforces and what passing does not prove.
 - [x] Provide a primary installation/onboarding path and clear repository/package links once those destinations exist.
@@ -40,7 +40,7 @@ Use warm neutral surfaces, strong typography, precise borders, and one distincti
 
 ### Build useful pages and examples
 
-- [x] Implement the Labs homepage with Usual Design as its first tool.
+- [x] Implement the Labs homepage with Usual UI as its first tool.
 - [x] Implement a product page showing a violation, an actionable diagnostic, and the corrected result.
 - [x] Explain the complete setup -> wizard -> selected repairs -> activation -> check workflow.
 - [x] Show that skipped categories stay unchecked and that the audit still documents them.

@@ -1,11 +1,11 @@
 ---
-name: usual-design
-description: Check a React and Tailwind v4 project against its Usual Design contract, execute an approved repair batch, or review an intentional policy change.
+name: usual-ui
+description: Check a React and Tailwind v4 project against its Usual UI contract, execute an approved repair batch, or review an intentional policy change.
 ---
 
-# Usual Design
+# Usual UI
 
-Use the project's locally installed `usual-design` command. npm scripts put its local binary on PATH; otherwise invoke `./node_modules/.bin/usual-design`. Do not download a different tool version as part of ordinary checks.
+Use the project's locally installed `usual-ui` command. npm scripts put its local binary on PATH; otherwise invoke `./node_modules/.bin/usual-ui`. Do not download a different tool version as part of ordinary checks.
 
 ## Policy and evidence
 
@@ -13,27 +13,27 @@ Use the project's locally installed `usual-design` command. npm scripts put its 
 
 The design categories are colors, typography, spacing/layout, shape/effects, and components. Coverage/unresolved cases form a sixth audit group and are attributed to the categories they prevent verifying.
 
-- `usual-design check` checks the full covered project against **active categories only**. Inactive categories are entirely unchecked, including newly introduced drift. Report that scope accurately.
-- `usual-design audit` examines drafted policy across all categories. Both commands are read-only unless an explicit persistence option is requested.
+- `usual-ui check` checks the full covered project against **active categories only**. Inactive categories are entirely unchecked, including newly introduced drift. Report that scope accurately.
+- `usual-ui audit` examines drafted policy across all categories. Both commands are read-only unless an explicit persistence option is requested.
 - Invalid configuration and unverifiable code affecting active categories are failures. Never describe them as a clean result.
 
 ## First-time onboarding
 
-Use the dedicated `usual-design-onboarding` skill for discovery, recommendations,
+Use the dedicated `usual-ui-onboarding` skill for discovery, recommendations,
 and guided visual review. It can be installed project-locally with
-`npx skills add usual-labs/usual-design --skill usual-design-onboarding`, selecting
+`npx skills add usual-labs/usual-ui --skill usual-ui-onboarding`, selecting
 the user's agent. Read its installed `SKILL.md` immediately. An existing contract
 remains authoritative; onboarding does not grant permission to replace it.
 
 ## Execute a repair batch
 
-Read the exact saved batch the user selected. A draft batch is not authorization. The wizard can approve and save a selected batch; the equivalent CLI is `usual-design plan --findings id,id --snapshot hash --write` with IDs and snapshot from a current audit. Before editing, run `usual-design verify-plan --plan docs/usual-design/repairs/<id>.json` using the exact saved path, and pass its `--config` value if custom. This read-only command rejects unapproved, corrupted, or stale batches. Check its approval, selected findings, source snapshot, and manifest identity before editing. If source, policy, or findings changed, run a fresh audit and reconcile the selection; do not treat stale locations as current instructions. Compare current audit identities with the saved batch before editing; after repairs, compare the fresh findings with the original selected outcomes.
+Read the exact saved batch the user selected. A draft batch is not authorization. The wizard can approve and save a selected batch; the equivalent CLI is `usual-ui plan --findings id,id --snapshot hash --write` with IDs and snapshot from a current audit. Before editing, run `usual-ui verify-plan --plan docs/usual-ui/repairs/<id>.json` using the exact saved path, and pass its `--config` value if custom. This read-only command rejects unapproved, corrupted, or stale batches. Check its approval, selected findings, source snapshot, and manifest identity before editing. If source, policy, or findings changed, run a fresh audit and reconcile the selection; do not treat stale locations as current instructions. Compare current audit identities with the saved batch before editing; after repairs, compare the fresh findings with the original selected outcomes.
 
 Preserve unrelated dirty work and application behavior. Ordinary repairs may change only the selected application code and intended outcomes. They must not broaden allowed values, weaken semantic/component rules, change coverage or ignored paths, deactivate categories, add exceptions, or delete records to make findings disappear. Ask for a separate design-policy decision when a valid repair requires a policy change.
 
-After each completed UI change, run `usual-design check`. Before reporting the batch complete, rerun the full audit and compare findings against the approved selection. Report remaining, new, and unresolved findings explicitly. Passing prose from another agent is not proof.
+After each completed UI change, run `usual-ui check`. Before reporting the batch complete, rerun the full audit and compare findings against the approved selection. Report remaining, new, and unresolved findings explicitly. Passing prose from another agent is not proof.
 
-Resume deferred work by reading `docs/usual-design/`, refreshing the audit, and selecting a current batch. Do not rely on chat memory to reconstruct approval.
+Resume deferred work by reading `docs/usual-ui/`, refreshing the audit, and selecting a current batch. Do not rely on chat memory to reconstruct approval.
 
 ## Change design policy intentionally
 

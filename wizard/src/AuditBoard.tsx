@@ -1,113 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
-import { canActivate, describe, grouped, labels, toggleGroup } from './model';
-import { categories, type Category, type Finding, type ProjectState } from './types';
-
-function GroupCheckbox({
-  findings,
-  selected,
-  disabled,
-  toggle,
-}: {
-  findings: Finding[];
-  selected: Set<string>;
-  disabled: boolean;
-  toggle: () => void;
-}) {
-  const ref = useRef<HTMLInputElement>(null);
-  const count = findings.filter((item) => selected.has(item.id)).length;
-  useEffect(() => {
-    if (ref.current) ref.current.indeterminate = count > 0 && count < findings.length;
-  }, [count, findings.length]);
-  return (
-    <label className="selection-label">
-      <input
-        ref={ref}
-        type="checkbox"
-        disabled={disabled || !findings.length}
-        checked={findings.length > 0 && count === findings.length}
-        onChange={toggle}
-      />
-      Select group{count > 0 ? ` (${count})` : ''}
-    </label>
-  );
-}
-
-function FindingRow({
-  finding,
-  selected,
-  disabled,
-  toggle,
-}: {
-  finding: Finding;
-  selected: boolean;
-  disabled: boolean;
-  toggle: () => void;
-}) {
-  return (
-    <li className="finding">
-      {finding.kind === 'decision' ? (
-        <span className="decision-marker" aria-hidden="true">
-          ?
-        </span>
-      ) : (
-        <input
-          type="checkbox"
-          checked={selected}
-          disabled={disabled}
-          onChange={toggle}
-          aria-label={`Select ${finding.ruleId} at ${finding.file}:${finding.line}`}
-        />
-      )}
-      <div className="finding-body">
-        <div className="finding-heading">
-          <span className={`kind kind-${finding.kind}`}>
-            {finding.kind === 'coverage'
-              ? 'Unresolved coverage'
-              : finding.kind === 'decision'
-                ? 'Decision needed'
-                : 'Violation'}
-          </span>
-          <code>{finding.ruleId}</code>
-        </div>
-        <p>{finding.message}</p>
-        <code className="source">
-          {finding.file}:{finding.line}:{finding.column}
-        </code>
-        {finding.kind === 'decision' && (
-          <p>
-            <a href="#policy">Review this policy decision</a>
-            <span className="muted"> · Policy changes require separate approval.</span>
-          </p>
-        )}
-        {(finding.expected !== undefined ||
-          finding.actual !== undefined ||
-          finding.affectedCategories?.length) && (
-          <details>
-            <summary>Rule evidence</summary>
-            {finding.actual !== undefined && (
-              <p>
-                <strong>Observed:</strong> <code>{describe(finding.actual)}</code>
-              </p>
-            )}
-            {finding.expected !== undefined && (
-              <p>
-                <strong>Expected:</strong> <code>{describe(finding.expected)}</code>
-              </p>
-            )}
-            {!!finding.affectedCategories?.length && (
-              <p>
-                <strong>Affects:</strong> {finding.affectedCategories.join(', ')}
-              </p>
-            )}
-            <p className="muted">
-              Finding ID: <code>{finding.id}</code>
-            </p>
-          </details>
-        )}
-      </div>
-    </li>
-  );
-}
+import { useState } from 'react';
+import { summarizeFindings } from '../../src/reporting.js';
+import { canActivate, grouped, labels, toggleGroup } from './model';
+import { FindingGroup, GroupCheckbox, matchesFinding } from './FindingGroup';
+import { categories, type Category, type ProjectState } from './types';
 
 export function AuditBoard({
   state,
@@ -130,6 +25,12 @@ export function AuditBoard({
   const [limits, setLimits] = useState<Partial<Record<Category, number>>>({});
   const audit = state.audit;
   const groups = grouped(audit?.findings ?? []);
+  const categoryOrder = [
+    ...categories.filter((category) => groups[category].length > 0),
+    ...categories.filter((category) => groups[category].length === 0),
+  ];
+  const summary = summarizeFindings(audit?.findings ?? []);
+  const byId = new Map(audit?.findings.map((finding) => [finding.id, finding]));
   const stale = !!audit && audit.manifestHash !== state.manifestHash;
   const query = search.trim().toLowerCase();
   const active: readonly string[] = state.manifest?.active ?? audit?.active ?? [];
@@ -137,19 +38,12 @@ export function AuditBoard({
     (category) => category !== 'coverage' && !active.includes(category),
   );
 
-  function toggleOne(id: string) {
-    const next = new Set(selected);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setSelected(next);
-  }
-
   return (
     <section className="panel" aria-labelledby="audit-title">
       <div className="section-heading">
         <div>
           <p className="eyebrow">03 · Choose what to resolve</p>
-          <h2 id="audit-title">Full project audit</h2>
+          <h2 id="audit-title">Choose your next repair batch</h2>
         </div>
         <button className="secondary" disabled={pending || !state.manifest} onClick={recheck}>
           {pending ? 'Working…' : audit ? 'Run fresh audit' : 'Run first audit'}
@@ -203,36 +97,57 @@ export function AuditBoard({
               />
             </label>
             <span className="muted">
-              {audit.files.length} files · {audit.findings.length} findings
+              {audit.files.length} {audit.files.length === 1 ? 'file' : 'files'} ·{' '}
+              {summary.totals.problems} diagnostic{' '}
+              {summary.totals.problems === 1 ? 'pattern' : 'patterns'} ·{' '}
+              {summary.totals.occurrences}{' '}
+              {summary.totals.occurrences === 1 ? 'finding' : 'findings'}
             </span>
           </div>
-          <p className="muted">
-            Group selection includes all findings in that group, even when search hides some.
-          </p>
+          <div className="audit-counts" aria-label="Finding types">
+            <span>
+              <strong>{summary.totals.violations}</strong>{' '}
+              {summary.totals.violations === 1 ? 'violation' : 'violations'}
+            </span>
+            <span>
+              <strong>{summary.totals.coverage}</strong> unresolved coverage
+            </span>
+            <span>
+              <strong>{summary.totals.decisions}</strong> policy{' '}
+              {summary.totals.decisions === 1 ? 'decision' : 'decisions'}
+            </span>
+          </div>
+          <details className="audit-help">
+            <summary>How selection and grouping work</summary>
+            <p className="muted">
+              Identical diagnostic patterns share guidance; each source occurrence keeps its own
+              evidence and selection. Group selection includes all findings in that group, even when
+              search hides some.
+            </p>
+          </details>
           <div className="audit-groups">
-            {categories.map((category) => {
+            {categoryOrder.map((category) => {
               const findings = groups[category];
               const repairable = findings.filter((item) => item.kind !== 'decision');
-              const filtered = findings.filter(
-                (item) =>
-                  !query ||
-                  `${item.message} ${item.file} ${item.ruleId}`.toLowerCase().includes(query),
+              const filtered = summary.problems.filter(
+                (problem) =>
+                  problem.category === category &&
+                  problem.findingIds.some((id) => matchesFinding(byId.get(id)!, query)),
               );
               const limit = limits[category] ?? 40;
-              const violations = findings.filter((item) => item.kind === 'violation').length;
-              const unresolved = findings.filter((item) => item.kind === 'coverage').length;
-              const decisions = findings.filter((item) => item.kind === 'decision').length;
+              const counts = summary.byCategory[category];
               return (
                 <section
                   key={category}
-                  className="audit-group"
+                  className={`audit-group${findings.length ? '' : ' audit-group-empty'}`}
                   aria-labelledby={`group-${category}`}
                 >
                   <div className="group-heading">
                     <div>
                       <h3 id={`group-${category}`}>{labels[category]}</h3>
                       <p>
-                        {violations} violations · {unresolved} unresolved · {decisions} decisions
+                        {counts.problems} {counts.problems === 1 ? 'pattern' : 'patterns'} ·{' '}
+                        {findings.length} {findings.length === 1 ? 'finding' : 'findings'}
                       </p>
                     </div>
                     <span className={`pill ${active.includes(category) ? 'success' : ''}`}>
@@ -244,31 +159,36 @@ export function AuditBoard({
                     </span>
                   </div>
                   <div className="group-controls">
-                    <GroupCheckbox
-                      findings={repairable}
-                      selected={selected}
-                      disabled={pending || stale}
-                      toggle={() => setSelected(toggleGroup(selected, repairable))}
-                    />
+                    {repairable.length > 0 && (
+                      <GroupCheckbox
+                        findings={repairable}
+                        selected={selected}
+                        disabled={pending || stale}
+                        label={`Select all ${labels[category]} findings`}
+                        toggle={() => setSelected(toggleGroup(selected, repairable))}
+                      />
+                    )}
                     {category !== 'coverage' && !active.includes(category) && (
                       <button
                         className="secondary small"
                         disabled={pending || !canActivate(category, audit, state.manifestHash)}
                         onClick={() => activate(category)}
                       >
-                        Activate category
+                        Activate {labels[category]}
                       </button>
                     )}
                   </div>
                   {filtered.length > 0 ? (
                     <ul className="finding-list">
-                      {filtered.slice(0, limit).map((finding) => (
-                        <FindingRow
-                          key={finding.id}
-                          finding={finding}
-                          selected={selected.has(finding.id)}
+                      {filtered.slice(0, limit).map((problem) => (
+                        <FindingGroup
+                          key={problem.findingIds[0]}
+                          problem={problem}
+                          findings={problem.findingIds.map((id) => byId.get(id)!)}
+                          query={query}
+                          selected={selected}
                           disabled={pending || stale}
-                          toggle={() => toggleOne(finding.id)}
+                          setSelected={setSelected}
                         />
                       ))}
                     </ul>
@@ -286,7 +206,8 @@ export function AuditBoard({
                       className="secondary small"
                       onClick={() => setLimits({ ...limits, [category]: limit + 100 })}
                     >
-                      Show next {Math.min(100, filtered.length - limit)} findings
+                      Show next {Math.min(100, filtered.length - limit)} diagnostic{' '}
+                      {filtered.length - limit === 1 ? 'pattern' : 'patterns'}
                     </button>
                   )}
                   {category !== 'coverage' &&
@@ -301,7 +222,7 @@ export function AuditBoard({
               );
             })}
           </div>
-          <div className="actions repair-actions">
+          <div id="audit-selection" tabIndex={-1} className="actions repair-actions">
             <span>
               {selected.size} selected · {audit.findings.length - selected.size} deferred
             </span>

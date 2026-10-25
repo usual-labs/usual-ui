@@ -3,7 +3,7 @@ const sessionToken = new URLSearchParams(window.location.hash.slice(1)).get('tok
 export async function request<T>(path: string, body?: unknown): Promise<T> {
   if (!sessionToken)
     throw new Error(
-      'This session link is missing its token. Reopen the URL printed by usual-design wizard.',
+      'This session link is missing its token. Reopen the URL printed by usual-ui wizard.',
     );
   let response: Response;
   try {

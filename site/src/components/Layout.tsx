@@ -1,11 +1,11 @@
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 export function Layout({
   children,
   page,
 }: {
   children: ReactNode;
-  page: 'labs' | 'design' | 'docs';
+  page: 'labs' | 'design' | 'docs' | 'blog';
 }) {
   return (
     <>
@@ -37,18 +37,25 @@ export function Layout({
         </a>
         <nav aria-label="Main navigation" className="flex items-center gap-6 text-sm">
           <a
-            href="/design/"
+            href="/ui/"
             aria-current={page === 'design' ? 'page' : undefined}
             className="hover:text-accent"
           >
-            Usual Design
+            Usual UI
           </a>
           <a
-            href="/design/docs/"
+            href="/ui/docs/"
             aria-current={page === 'docs' ? 'page' : undefined}
             className="hover:text-accent"
           >
             Documentation <span aria-hidden="true">↗</span>
+          </a>
+          <a
+            href="/blog/"
+            aria-current={page === 'blog' ? 'page' : undefined}
+            className="hover:text-accent"
+          >
+            Blog
           </a>
         </nav>
       </header>
@@ -61,7 +68,7 @@ export function Layout({
           <p className="mt-2">Tools for the everyday craft.</p>
         </div>
         <div className="flex gap-6">
-          <a className="hover:text-accent" href="/design/docs/">
+          <a className="hover:text-accent" href="/ui/docs/">
             Local setup
           </a>
           <span>Open source · MIT</span>

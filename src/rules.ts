@@ -9,7 +9,7 @@ import {
   wildcardMatch,
   propertyCategory,
   directVariableReference,
-  utilityFamily,
+  utilitiesConflict,
 } from './classes.js';
 import { hash } from './files.js';
 import type { Declaration } from './analysis.js';
@@ -205,11 +205,7 @@ export function evaluate(
           !branches.every(
             (branch) =>
               branch.includes(needed) &&
-              !branch.some(
-                (c) =>
-                  c !== needed &&
-                  utilityFamily(c, themeTokens) === utilityFamily(needed, themeTokens),
-              ),
+              !branch.some((c) => c !== needed && utilitiesConflict(c, needed, themeTokens)),
           )
         )
           out.push(

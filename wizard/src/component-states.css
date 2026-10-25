@@ -1,0 +1,226 @@
+.component-menu-trigger {
+  anchor-name: --component-actions;
+}
+.component-popover,
+.component-dialog {
+  box-sizing: border-box;
+  color: var(--sample-onSurface);
+  background: var(--sample-surface);
+  border: 1px solid var(--sample-border);
+  border-radius: var(--sample-cardRadius);
+  font: inherit;
+  box-shadow: 0 16px 48px #0002;
+}
+.component-popover {
+  width: min(240px, calc(100vw - 32px));
+  padding: var(--sample-gap);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+.component-popover:popover-open {
+  display: grid;
+  gap: 0.5em;
+}
+.component-popover > p {
+  font-size: 0.8em;
+  margin: 0 0 0.5em;
+}
+.component-popover button {
+  text-align: left;
+}
+@supports (position-anchor: --component-actions) {
+  .component-popover {
+    position-anchor: --component-actions;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin: 8px 0 0;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+  }
+}
+.component-tooltip-anchor {
+  position: relative;
+}
+.component-samples .component-help {
+  anchor-name: --component-help;
+  padding: 0;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+}
+.component-tooltip-anchor [role='tooltip'] {
+  position: absolute;
+  z-index: 2;
+  top: 100%;
+  right: 0;
+  width: 210px;
+  padding: 0.8em 1em;
+  border-radius: var(--sample-controlRadius);
+  background: var(--sample-onSurface);
+  color: var(--sample-surface);
+  box-shadow: 0 4px 12px #0002;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+@supports (position-anchor: --component-help) {
+  .component-tooltip-anchor [role='tooltip'] {
+    position: fixed;
+    position-anchor: --component-help;
+    inset: auto;
+    top: anchor(bottom);
+    left: anchor(left);
+    margin-top: 0;
+    position-try-fallbacks:
+      flip-block,
+      flip-inline,
+      flip-block flip-inline;
+    max-width: calc(100vw - 32px);
+  }
+}
+.component-dialog {
+  width: min(440px, calc(100vw - 32px));
+  padding: var(--sample-padding);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+.component-dialog::backdrop {
+  background: #161a1f80;
+}
+.component-dialog .sample-actions {
+  justify-content: flex-end;
+}
+.component-samples .component-field-help {
+  margin: -0.5em 0 1em;
+  font-size: 0.75em;
+}
+.component-samples .component-field-error {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  color: var(--sample-onSurface);
+  font-size: 0.8em;
+  font-weight: 600;
+}
+.component-field-error > span {
+  flex-shrink: 0;
+  width: 1.25em;
+  line-height: 1.25em;
+  text-align: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+.component-samples input[aria-invalid='true'] {
+  border: 2px solid var(--sample-onSurface);
+}
+.component-samples input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.component-samples input[readonly]:not(:disabled) {
+  background: color-mix(in srgb, var(--sample-onSurface) 4%, var(--sample-surface));
+}
+.component-samples form {
+  margin-bottom: var(--sample-gap);
+}
+.component-control-details {
+  margin-top: 1.5em;
+  border-top: 1px solid var(--sample-border);
+  padding-top: 1em;
+}
+.component-control-details summary {
+  font-size: 0.85em;
+  cursor: pointer;
+}
+.component-control-details[open] summary {
+  margin-bottom: 1.2em;
+}
+.component-profile-tabs {
+  display: flex;
+  gap: 0.4em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid var(--sample-border);
+  padding-bottom: 0.75em;
+}
+.component-profile-tabs button[aria-selected='true'],
+.component-pagination button[aria-current='page'] {
+  background: var(--sample-primary);
+  color: var(--sample-onPrimary);
+  border-color: var(--sample-primary);
+}
+.component-profile-panel {
+  min-height: 175px;
+}
+.component-profile-panel .component-profile-stats {
+  border-top: 0;
+  padding-top: 0.4em;
+}
+.component-profile-activity {
+  display: grid;
+  gap: 1.2em;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: 0.85em;
+}
+.component-profile-activity strong,
+.component-profile-activity span {
+  display: block;
+}
+.component-profile-activity span {
+  margin-top: 0.25em;
+  font-size: 0.9em;
+  color: var(--sample-muted);
+}
+.component-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em;
+  margin-top: 1em;
+}
+.component-samples .component-pagination button {
+  padding: 0.5em 0.7em;
+  font-size: 0.75em;
+}
+.component-toast {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  justify-content: space-between;
+  margin-top: var(--sample-gap);
+  padding: 1em;
+  border: 1px solid var(--sample-border);
+  border-radius: var(--sample-controlRadius);
+  box-shadow: 0 4px 12px #0001;
+  font-size: 0.8em;
+}
+.component-toast > span > span {
+  display: block;
+  margin-top: 0.25em;
+  color: var(--sample-muted);
+}
+.component-samples .component-toast button {
+  flex-shrink: 0;
+  padding: 0.1em 0.45em;
+  font-size: 1.3em;
+}
+.component-spinner {
+  animation: component-spin 1s linear infinite;
+}
+@keyframes component-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .component-spinner {
+    animation: none;
+  }
+}
+.sample-radius button[aria-pressed='true'] {
+  background: var(--sample-onPrimary);
+  color: var(--sample-primary);
+}

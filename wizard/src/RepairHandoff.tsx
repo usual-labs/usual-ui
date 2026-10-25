@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { remediationFor, summarizeFindings } from '../../src/reporting.js';
 import { grouped, labels } from './model';
 import { categories, type Finding, type Handoff } from './types';
 
@@ -27,7 +28,9 @@ export function RepairHandoff({
   useEffect(() => {
     if (review || handoff) title.current?.focus();
   }, [review, handoff]);
+  useEffect(() => setCopyStatus(''), [handoff]);
   const groups = grouped(selected);
+  const summary = summarizeFindings(selected);
 
   function selectInstruction() {
     prompt.current?.focus();
@@ -59,13 +62,32 @@ export function RepairHandoff({
           ? 'Confirm this repair batch'
           : handoff
             ? 'Your repair plan is saved'
-            : 'A clear handoff, on your terms'}
+            : 'From selected findings to a clear plan'}
       </h2>
+      <ol className="handoff-sequence" aria-label="Repair workflow">
+        <li aria-current={review || !handoff ? 'step' : undefined}>
+          <span>1</span>Review & save
+        </li>
+        <li aria-current={!review && handoff ? 'step' : undefined}>
+          <span>2</span>Hand to your agent
+        </li>
+        <li>
+          <span>3</span>Recheck the project
+        </li>
+      </ol>
       {review ? (
         <>
           <p>
-            You are authorizing a saved repair plan for <strong>{selected.length} findings</strong>.{' '}
-            {total - selected.length} findings will remain deferred.
+            You are authorizing a saved repair plan for{' '}
+            <strong>
+              {selected.length} {selected.length === 1 ? 'finding' : 'findings'}
+            </strong>
+            . {total - selected.length} {total - selected.length === 1 ? 'finding' : 'findings'}{' '}
+            will remain deferred. The selection contains {summary.totals.problems} diagnostic{' '}
+            {summary.totals.problems === 1 ? 'pattern' : 'patterns'}: {summary.totals.violations}{' '}
+            {summary.totals.violations === 1 ? 'violation' : 'violations'} and{' '}
+            {summary.totals.coverage} unresolved coverage{' '}
+            {summary.totals.coverage === 1 ? 'finding' : 'findings'}.
           </p>
           <ul className="review-groups">
             {categories
@@ -73,11 +95,14 @@ export function RepairHandoff({
               .map((category) => (
                 <li key={category}>
                   <strong>{labels[category]}</strong>
-                  <span>{groups[category].length} findings</span>
+                  <span>
+                    {groups[category].length}{' '}
+                    {groups[category].length === 1 ? 'finding' : 'findings'}
+                  </span>
                 </li>
               ))}
           </ul>
-          <details>
+          <details className="workshop-disclosure">
             <summary>Review selected source locations</summary>
             <ul className="source-list">
               {selected.map((item) => (
@@ -86,6 +111,7 @@ export function RepairHandoff({
                     {item.file}:{item.line}
                   </code>{' '}
                   — {item.message}
+                  <p>{remediationFor(item).instruction}</p>
                 </li>
               ))}
             </ul>
@@ -114,31 +140,40 @@ export function RepairHandoff({
             Saved in your project at <code className="source">{handoff.path}</code>. Copy the
             instruction into your existing agent to execute the approved batch.
           </p>
-          <label htmlFor="repair-prompt">Agent instruction</label>
-          <textarea
-            ref={prompt}
-            id="repair-prompt"
-            className="handoff-prompt"
-            readOnly
-            value={handoff.prompt}
-            onFocus={(event) => event.currentTarget.select()}
-          />
-          <div className="actions">
-            <button onClick={() => void copy()}>Copy agent instruction</button>
-            <button className="secondary" onClick={selectInstruction}>
-              Select instruction
-            </button>
+          <div className="handoff-step">
+            <h3>Send the saved instruction to your agent</h3>
+            <p className="muted">
+              The plan is ready. Your agent makes the code changes in your project.
+            </p>
+            <label htmlFor="repair-prompt">Agent instruction</label>
+            <textarea
+              ref={prompt}
+              id="repair-prompt"
+              className="handoff-prompt"
+              readOnly
+              value={handoff.prompt}
+              onFocus={(event) => event.currentTarget.select()}
+            />
+            <div className="actions">
+              <button onClick={() => void copy()}>Copy agent instruction</button>
+              <button className="secondary" onClick={selectInstruction}>
+                Select instruction
+              </button>
+            </div>
+            <p role="status" className="muted">
+              {copyStatus || 'The plan is prepared. No code repairs have been verified yet.'}
+            </p>
+          </div>
+          <div className="handoff-step">
+            <h3>Then verify the changes</h3>
+            <p className="muted">
+              Return to the audit after your agent works. Activation requires current, clean
+              evidence for the whole category; copying this instruction is not proof of completion.
+            </p>
             <button className="secondary" disabled={pending} onClick={recheck}>
               Agent finished? Run fresh audit
             </button>
           </div>
-          <p role="status" className="muted">
-            {copyStatus || 'The plan is prepared. No code repairs have been verified yet.'}
-          </p>
-          <p className="muted">
-            Return to the audit after your agent works. Activation requires current, clean evidence
-            for the whole category; copying this instruction is not proof of completion.
-          </p>
         </>
       ) : (
         <p>

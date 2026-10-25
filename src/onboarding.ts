@@ -13,7 +13,7 @@ import {
   type OnboardingProposal,
 } from './onboarding-types.js';
 
-export const onboardingPath = 'docs/usual-design/onboarding/session.json';
+export const onboardingPath = 'docs/usual-ui/onboarding/session.json';
 const serialize = (value: unknown) => JSON.stringify(value, null, 2) + '\n';
 const policyText = (s: OnboardingSession) => serialize(compileChoices(s.proposal, s.choices));
 
@@ -148,7 +148,7 @@ export async function prepareOnboarding(
     if (previous)
       await atomicWrite(
         root,
-        `docs/usual-design/onboarding/history/${randomUUID()}.json`,
+        `docs/usual-ui/onboarding/history/${randomUUID()}.json`,
         serialize(previous.session),
         null,
       );

@@ -21,7 +21,7 @@ archive; 0.1.0 does not have the guided `onboard` command.
 
 Release update (2026-10-20): `@usualui/lint@0.1.0` is published and verified through registry integrity and a clean install. This supersedes the npm login, scope-access, and first-publication blockers below. Trusted-publisher configuration and an actual OIDC publication remain pending.
 
-Repository update (2026-10-20): the user authorized pushing to `usual-labs/usual-design`, and the public GitHub repository has been created at https://github.com/usual-labs/usual-design. This supersedes the repository-creation and destination-pending notes below. npm publication, website deployment, confidential reporting contacts, and protection settings remain separate tasks.
+Repository update (2026-10-20): the user authorized pushing to `usual-labs/usual-ui`, and the public GitHub repository has been created at https://github.com/usual-labs/usual-ui. This supersedes the repository-creation and destination-pending notes below. npm publication, website deployment, confidential reporting contacts, and protection settings remain separate tasks.
 
 Implementation has continued without waiting for these decisions. This file contains only actions/decisions needing your involvement; technical status is in [progress](../implementation/progress.md). None of these items is an instruction to publish or contact anyone automatically.
 
@@ -48,10 +48,10 @@ Implementation has continued without waiting for these decisions. This file cont
 
 ## 4. Naming, ownership, and release destination
 
-- Local candidate: `@usualui/lint@0.1.0`, executable `usual-design`.
+- Local candidate: `@usualui/lint@0.1.0`, executable `usual-ui`.
 - Registry lookup did not find a public package at that name. That does not establish ownership/availability of the `@usualui` scope.
 - Confirm the public GitHub owner/repository, npm name/scope and authorized publishing account.
-- Confirm copyright attribution before public release. The current MIT file uses “Usual Design contributors”; no company identity has been invented.
+- Confirm copyright attribution before public release. The current MIT file uses “Usual UI contributors”; no company identity has been invented.
 - No Git repository or remote was created, and nothing was committed/pushed/publicized by this implementation.
 
 ## 5. Hosting and publication
@@ -83,7 +83,7 @@ These are owner/platform setup items, not missing local documentation or permiss
 
 ## Quick local commands
 
-Run from `usual-design`:
+Run from `usual-ui`:
 
 ```sh
 npm ci
@@ -94,10 +94,10 @@ node dist/cli.js wizard --root site
 npm run dev:site
 ```
 
-Candidate archive and machine proof are generated in the ignored `.usual-design/artifacts/` folder by `npm run verify:package`. Engineering limitations that do not require a product decision are listed in the compatibility guide and progress record, rather than being passed to you as permission requests.
+Candidate archive and machine proof are generated in the ignored `.usual-ui/artifacts/` folder by `npm run verify:package`. Engineering limitations that do not require a product decision are listed in the compatibility guide and progress record, rather than being passed to you as permission requests.
 
 ## 8. npm publishing setup
 
-The package is now `@usualui/lint`, with the `usual-design` executable unchanged. See [publishing](../../publishing.md) for the exact first-release and trusted-publisher steps. GitHub Actions `publish.yml` defaults to verification only; publishing requires an explicit checked input.
+The package is now `@usualui/lint`, with the `usual-ui` executable unchanged. See [publishing](../../publishing.md) for the exact first-release and trusted-publisher steps. GitHub Actions `publish.yml` defaults to verification only; publishing requires an explicit checked input.
 
-The current local npm session returns E401 and the registry has no public `@usualui/lint` version. Confirm/create the npm scope and authenticate the authorized owner for the first publication. Then configure npm trust for `usual-labs/usual-design`, workflow `publish.yml`, environment `npm`, and the Publish action when the next release is ready. Configure GitHub environment protections separately. No npm token, first publication, or scope ownership has been established by these files.
+The current local npm session returns E401 and the registry has no public `@usualui/lint` version. Confirm/create the npm scope and authenticate the authorized owner for the first publication. Then configure npm trust for `usual-labs/usual-ui`, workflow `publish.yml`, environment `npm`, and the Publish action when the next release is ready. Configure GitHub environment protections separately. No npm token, first publication, or scope ownership has been established by these files.

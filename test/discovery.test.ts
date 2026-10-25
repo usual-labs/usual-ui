@@ -39,7 +39,10 @@ test('excluded metadata reports stable boundaries without enumerating dependency
       '.vercel/output/config.json': '{}',
       '.vite/deps/compiled.js': 'invalid source',
       '.parcel-cache/hash': 'cache',
-      'docs/usual-design/notes.md': 'durable notes',
+      'docs/usual-ui/notes.md': 'durable notes',
+      'docs/usual-design/notes.md': 'historical notes',
+      '.usual-ui/generated.tsx': 'invalid source',
+      '.usual-design/generated.tsx': 'invalid source',
     },
     async (root) => {
       const manifest = defaultManifest();
@@ -66,7 +69,10 @@ test('excluded metadata reports stable boundaries without enumerating dependency
         '.vercel',
         '.vite',
         '.parcel-cache',
+        'docs/usual-ui',
         'docs/usual-design',
+        '.usual-ui',
+        '.usual-design',
         'src/types.d.ts',
       ])
         assert.ok(entries.some((e) => e.path === path && e.reason === 'standard'));

@@ -65,12 +65,12 @@ export async function applySetupPlan(plan: SetupPlan): Promise<SetupPlan> {
     if ((await readSetupFile(root, change.path)) !== change.before)
       throw new Error(`File changed since setup preview: ${change.path}`);
   }
-  const lockPath = await safeTarget(root, '.usual-design/setup.lock');
+  const lockPath = await safeTarget(root, '.usual-ui/setup.lock');
   await mkdir(path.dirname(lockPath), { recursive: true });
   const lock = await open(lockPath, 'wx', 0o600).catch((error) => {
     if (error.code === 'EEXIST')
       throw new Error(
-        'Another setup is running; inspect .usual-design/setup.lock if it was interrupted',
+        'Another setup is running; inspect .usual-ui/setup.lock if it was interrupted',
       );
     throw error;
   });

@@ -1,3 +1,4 @@
+import { twMerge } from 'tailwind-merge';
 import type { StyleCategory } from './types.js';
 export const styleCategories: StyleCategory[] = ['colors', 'typography', 'spacing', 'shape'];
 export function splitClass(input: string): { variants: string[]; base: string } {
@@ -50,7 +51,8 @@ export function classCategory(
   const prop = b.match(/^\[([\w-]+):/);
   if (prop) return propertyCategory(prop[1]);
   if (/^(bg|from|via|to|fill|stroke|accent|caret|decoration)-/.test(b)) return 'colors';
-  if (b.startsWith('text-') && themeTokens.has(`--text-${b.slice(5)}`)) return 'typography';
+  if (b.startsWith('text-') && themeTokens.has(`--text-${b.slice(5).split('/')[0]}`))
+    return 'typography';
   if (/^text-/.test(b))
     return /^text-(xs|sm|base|lg|[2-9]?xl|left|right|center|justify|start|end|wrap|nowrap|balance|pretty)(\/.*)?$/.test(
       b,
@@ -61,7 +63,7 @@ export function classCategory(
         : 'colors';
   if (
     /^(font|leading|tracking|line-clamp)-/.test(b) ||
-    /^(uppercase|lowercase|capitalize|normal-case|italic|not-italic|underline|no-underline|antialiased|truncate)$/.test(
+    /^(uppercase|lowercase|capitalize|normal-case|italic|not-italic|underline|no-underline|antialiased|truncate|normal-nums|ordinal|slashed-zero|lining-nums|oldstyle-nums|proportional-nums|tabular-nums|diagonal-fractions|stacked-fractions)$/.test(
       b,
     )
   )
@@ -121,8 +123,59 @@ export function utilityFamily(
   const normalized = base.replace(/^-/, '');
   const prefix = normalized.startsWith('text-')
     ? category === 'typography'
-      ? 'font-size'
+      ? /^text-(left|right|center|justify|start|end)$/.test(normalized)
+        ? 'text-align'
+        : /^text-(wrap|nowrap|balance|pretty)$/.test(normalized)
+          ? 'text-wrap'
+          : 'font-size'
       : 'text-color'
     : normalized.match(/^[a-z]+/)?.[0];
   return variants.join(':') + '|' + category + '|' + prefix;
+}
+
+function fontOperand(base: string, themeTokens: ReadonlySet<string>): string | undefined {
+  const name = base.match(/^font-([\w-]+)$/)?.[1];
+  if (!name || /^(stretch|features)-/.test(name)) return base;
+  // Tailwind resolves a named family before a named weight when both exist.
+  if (themeTokens.has(`--font-${name}`)) return `font-[family-name:var(--font-${name})]`;
+  if (themeTokens.has(`--font-weight-${name}`)) return `font-[weight:var(--font-weight-${name})]`;
+  if (
+    /^(sans|serif|mono|thin|extralight|light|normal|medium|semibold|bold|extrabold|black|\d+)$/.test(
+      name,
+    )
+  )
+    return base;
+  // An approved name alone does not establish whether it sets family or weight.
+  return undefined;
+}
+
+export function utilitiesConflict(
+  first: string,
+  second: string,
+  themeTokens: ReadonlySet<string> = new Set(),
+): boolean {
+  const a = splitClass(first),
+    b = splitClass(second);
+  const category = classCategory(first, themeTokens);
+  if (
+    !category ||
+    category !== classCategory(second, themeTokens) ||
+    a.variants.join(':') !== b.variants.join(':') ||
+    a.base === b.base
+  )
+    return false;
+  // Project-defined text sizes are known from the source token inventory. Keep
+  // size, alignment and wrapping independent, including custom text-* sizes.
+  if (category !== 'typography' || a.base.startsWith('text-') || b.base.startsWith('text-'))
+    return utilityFamily(first, themeTokens) === utilityFamily(second, themeTokens);
+  // Numeric features have independent groups plus normal-nums, which resets all
+  // of them. The installed Tailwind merger also distinguishes font weight/style/family.
+  const firstOperand = fontOperand(a.base, themeTokens),
+    secondOperand = fontOperand(b.base, themeTokens);
+  if (firstOperand === undefined || secondOperand === undefined)
+    return [a.base, b.base].every((base) => /^font-(?!stretch-|features-)/.test(base));
+  return (
+    twMerge(firstOperand, secondOperand) !== `${firstOperand} ${secondOperand}` ||
+    twMerge(secondOperand, firstOperand) !== `${secondOperand} ${firstOperand}`
+  );
 }

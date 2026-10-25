@@ -89,10 +89,6 @@ export function Inventory({
         These are observed values, not approved rules. Multiple sizes or corners can be intentional.
         Choose the roles that belong in your project.
       </p>
-      <p className="muted">
-        Samples use built-in controls and safe literal values. Fonts and values that need
-        application context fall back to their source representation.
-      </p>
       {!!warnings.length && (
         <div className="callout warning">
           <strong>Discovery needs attention</strong>
@@ -104,37 +100,44 @@ export function Inventory({
         </div>
       )}
       {tokens.length ? (
-        <div className="token-grid">
-          {visible.map((token, index) => (
-            <article
-              className="token-card"
-              key={`${token.file}:${token.line}:${token.name}:${index}`}
-            >
-              <Specimen token={token} />
-              <h3>
-                <code>{token.name}</code>
-              </h3>
-              <code className="token-value">{token.value}</code>
-              <small className="source">
-                {token.file}:{token.line}
-              </small>
-            </article>
-          ))}
-        </div>
+        <details className="workshop-disclosure">
+          <summary>Explore {tokens.length} shared tokens</summary>
+          <p className="muted">
+            Samples use safe literal values. Values that need application context show their source
+            representation.
+          </p>
+          <div className="token-grid">
+            {visible.map((token, index) => (
+              <article
+                className="token-card"
+                key={`${token.file}:${token.line}:${token.name}:${index}`}
+              >
+                <Specimen token={token} />
+                <h3>
+                  <code>{token.name}</code>
+                </h3>
+                <code className="token-value">{token.value}</code>
+                <small className="source">
+                  {token.file}:{token.line}
+                </small>
+              </article>
+            ))}
+          </div>
+          {tokens.length > 24 && (
+            <button className="secondary" onClick={() => setExpanded(!expanded)}>
+              {expanded ? 'Show fewer tokens' : `Show all ${tokens.length} tokens`}
+            </button>
+          )}
+        </details>
       ) : (
         <div className="empty">
           No supported token declarations were discovered. Review the observed styles below to
           establish intentional rules; your agent can help turn those decisions into shared tokens.
         </div>
       )}
-      {tokens.length > 24 && (
-        <button className="secondary" onClick={() => setExpanded(!expanded)}>
-          {expanded ? 'Show fewer tokens' : `Show all ${tokens.length} tokens`}
-        </button>
-      )}
       {candidates.length > 0 && (
-        <div className="observed-values">
-          <h3>Styles observed in your code</h3>
+        <details className="workshop-disclosure observed-values">
+          <summary>Review {candidates.length} styles observed in your code</summary>
           <p>
             Choose the values that belong in your design. You can keep multiple intentional roles.
             Adding a value edits the draft only; it does not save policy or activate lint.
@@ -203,7 +206,7 @@ export function Inventory({
                 : `Show all ${candidates.length} observed values`}
             </button>
           )}
-        </div>
+        </details>
       )}
       {components.length > 0 && (
         <details className="disclosure" open>

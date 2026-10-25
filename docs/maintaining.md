@@ -2,7 +2,7 @@
 
 This guide keeps review, community care, and releases consistent for a small project. It does not grant repository access or publishing authority. Repository owners designate maintainers and retain responsibility for those permissions.
 
-Contributors should start with [CONTRIBUTING.md](../CONTRIBUTING.md). The source repository is [usual-labs/usual-design](https://github.com/usual-labs/usual-design), with `@usualui/lint` published on npm; the preparation below is not evidence that external settings are enabled.
+Contributors should start with [CONTRIBUTING.md](../CONTRIBUTING.md). The source repository is [usual-labs/usual-ui](https://github.com/usual-labs/usual-ui), with `@usualui/lint` published on npm; the preparation below is not evidence that external settings are enabled.
 
 ## Before opening public contributions
 
@@ -64,7 +64,7 @@ Public publication and deployment require the repository owner's authorization. 
    npm run audit:site
    ```
 
-3. Inspect the archive and `.usual-design/artifacts/package-smoke.json`. Check that documentation, schema, skills, and wizard assets are present and that private source, local evidence, and credentials are absent.
+3. Inspect the archive and `.usual-ui/artifacts/package-smoke.json`. Check that documentation, schema, skills, and wizard assets are present and that private source, local evidence, and credentials are absent.
 4. Review compatibility and migration implications. For manifest/schema or saved-record changes, document the supported transition; do not silently reinterpret existing approvals.
 5. Review dependency vulnerabilities, licenses, and [third-party notices](../THIRD_PARTY_NOTICES.md). For a security fix, coordinate the advisory and release under the security policy.
 6. Record tests, actual platform/client/browser evidence, known limitations, artifact identity, and release notes. A build cannot stand in for those other checks.

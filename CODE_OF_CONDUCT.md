@@ -1,6 +1,6 @@
 # Code of Conduct
 
-Usual Design welcomes people with different backgrounds, experience, and ways of working. Everyone participating in project issues, pull requests, reviews, and other project-managed spaces is expected to follow these standards. They also apply when someone represents the project publicly.
+Usual UI welcomes people with different backgrounds, experience, and ways of working. Everyone participating in project issues, pull requests, reviews, and other project-managed spaces is expected to follow these standards. They also apply when someone represents the project publicly.
 
 ## Work with care
 

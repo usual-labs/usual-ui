@@ -54,7 +54,7 @@ test('website source and draft policy complete the real API audit/repair/activat
     assert.deepEqual(activated.findings, []);
     assert.equal(activated.active.length, 5);
     const progress = JSON.parse(
-      await readFile(join(root, 'docs/usual-design/repair-progress.json'), 'utf8'),
+      await readFile(join(root, 'docs/usual-ui/repair-progress.json'), 'utf8'),
     );
     assert.ok(
       progress.batches[0].findings.every(

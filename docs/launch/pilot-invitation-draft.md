@@ -2,7 +2,7 @@
 
 ## Draft copy
 
-Hi! We’re building Usual Design to help AI-heavy teams keep their UI aligned with their own design rules.
+Hi! We’re building Usual UI to help AI-heavy teams keep their UI aligned with their own design rules.
 
 It runs locally on React/Tailwind v4 projects, checks approved values, semantic conventions, and shared components, and gives your existing coding agent actionable feedback. A visual setup flow helps you decide which categories to adopt first.
 

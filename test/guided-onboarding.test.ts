@@ -24,7 +24,7 @@ import { defaultManifest, loadManifest, saveManifest } from '../src/config.js';
 
 async function example(): Promise<OnboardingProposal> {
   const reference = await readFile(
-    new URL('../skills/usual-design-onboarding/references/proposal.md', import.meta.url),
+    new URL('../skills/usual-ui-onboarding/references/proposal.md', import.meta.url),
     'utf8',
   );
   return parseProposal(JSON.parse(reference.match(/```json\n([\s\S]*?)\n```/)![1]));
@@ -196,9 +196,9 @@ test('source drift blocks approval and refreshed preparation preserves old choic
   assert.equal(refreshed.resumed, false);
   assert.equal(refreshed.session.step, 0);
   const { readdir } = await import('node:fs/promises');
-  const history = await readdir(join(root, 'docs/usual-design/onboarding/history'));
+  const history = await readdir(join(root, 'docs/usual-ui/onboarding/history'));
   const archived = JSON.parse(
-    await readFile(join(root, 'docs/usual-design/onboarding/history', history[0]), 'utf8'),
+    await readFile(join(root, 'docs/usual-ui/onboarding/history', history[0]), 'utf8'),
   );
   assert.equal(archived.step, 6);
 });

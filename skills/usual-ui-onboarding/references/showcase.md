@@ -18,7 +18,7 @@ where it can render the complete sheet and receive live choices. Otherwise add
 one isolated development-only entry using the project's existing framework and
 build setup. Do not install a second UI library or generate another wizard.
 
-Keep a compact `docs/usual-design/onboarding/showcase.md` coverage table:
+Keep a compact `docs/usual-ui/onboarding/showcase.md` coverage table:
 source/export, variants/states, showcase section, and any reason unavailable.
 Cover every discovered shared presentational component. Compose business views
 with fixture props; never invoke authenticated services, production data, or
@@ -81,7 +81,7 @@ export function Showcase() {
 ```
 
 `ProjectCatalogue` above is a project-specific component to implement, not an
-export from Usual Design. Use the exact decision and option IDs from the proposal.
+export from Usual UI. Use the exact decision and option IDs from the proposal.
 The bridge sends only `{theme, selections, deferred, values}`. It sends no source
 files, manifest, API session token, or executable code. `values` contains selected
 literal preview slots; `selections` also supports full typography scales and

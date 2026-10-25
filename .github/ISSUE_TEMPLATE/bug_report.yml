@@ -4,7 +4,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for helping improve Usual Design. Search existing issues first.
+        Thank you for helping improve Usual UI. Search existing issues first.
         Keep security vulnerabilities out of public issues; follow SECURITY.md instead.
         Review source snippets, manifest values, paths, and output for private information.
         Never include credentials or the local wizard's session URL/token.
@@ -29,7 +29,7 @@ body:
       label: Environment
       description: Include CLI version or source revision, Node/npm/Tailwind versions, and OS. For integrations, include shell and agent/client versions.
       placeholder: |
-        Usual Design version / revision:
+        Usual UI version / revision:
         Node / npm:
         Tailwind:
         OS / shell:

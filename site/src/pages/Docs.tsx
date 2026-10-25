@@ -51,7 +51,7 @@ export function Docs() {
       <article className="min-w-0 space-y-16 lg:col-span-3">
         <header>
           <p className="mb-4 font-mono text-xs uppercase tracking-widest text-accent">
-            Usual Design / documentation
+            Usual UI / documentation
           </p>
           <h1 className="text-title font-semibold tracking-tight">
             From design decisions
@@ -72,7 +72,7 @@ export function Docs() {
           <CodeBlock label="Onboarding prompt" code={onboardingPrompt} />
           <p className="leading-relaxed text-muted">
             This onboarding workflow requires @usualui/lint 0.3.0+. Skills are installed from
-            usual-labs/usual-design at project scope. Existing policy stays protected.
+            usual-labs/usual-ui at project scope. Existing policy stays protected.
           </p>
         </section>
         <section id="discover" className="space-y-5">
@@ -84,7 +84,7 @@ export function Docs() {
           </p>
           <CodeBlock
             code={
-              'npx --no-install usual-design onboard --proposal docs/usual-design/onboarding/proposal.json --write\nnpx --no-install usual-design wizard'
+              'npx --no-install usual-ui onboard --proposal docs/usual-ui/onboarding/proposal.json --write\nnpx --no-install usual-ui wizard'
             }
           />
           <p className="leading-relaxed text-muted">
@@ -110,7 +110,7 @@ export function Docs() {
             The full audit groups findings into colors, typography, spacing/layout, shape/effects,
             components, and coverage/unresolved cases. Select a batch in the wizard and hand its
             saved plan to your existing agent. Decisions, findings, and deferred work remain in the
-            project’s <code>docs/usual-design</code> folder.
+            project’s <code>docs/usual-ui</code> folder.
           </p>
           <p className="leading-relaxed text-muted">
             The repair agent changes application code and reruns the audit. It must not broaden
@@ -119,7 +119,7 @@ export function Docs() {
           </p>
           <CodeBlock
             code={
-              'npx --no-install usual-design audit --save\nnpx --no-install usual-design activate --categories colors,components --write\nnpx --no-install usual-design check'
+              'npx --no-install usual-ui audit --save\nnpx --no-install usual-ui activate --categories colors,components --write\nnpx --no-install usual-ui check'
             }
           />
           <p className="leading-relaxed text-muted">
@@ -159,7 +159,7 @@ export function Docs() {
           <CodeBlock
             label="Preview integration setup"
             code={
-              'npx --no-install usual-design setup --host both --hooks\nnpx --no-install usual-design setup --host both --hooks --write'
+              'npx --no-install usual-ui setup --host both --hooks\nnpx --no-install usual-ui setup --host both --hooks --write'
             }
           />
           <p className="leading-relaxed text-muted">

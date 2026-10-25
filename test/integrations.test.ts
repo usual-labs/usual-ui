@@ -14,7 +14,7 @@ afterEach(async () => {
   await Promise.all(temporary.splice(0).map((dir) => rm(dir, { recursive: true, force: true })));
 });
 async function fixture(): Promise<string> {
-  const root = await mkdtemp(path.join(os.tmpdir(), 'usual design setup '));
+  const root = await mkdtemp(path.join(os.tmpdir(), 'usual ui setup '));
   temporary.push(root);
   await writeFile(
     path.join(root, 'package.json'),
@@ -60,31 +60,61 @@ test('setup previews, preserves instructions/package text, and is idempotent for
   const before = await readFile(path.join(root, 'package.json'), 'utf8');
   const plan = await planSetup(root, 'both');
   assert.deepEqual(plan.conflicts, []);
-  await assert.rejects(readFile(path.join(root, '.agents/skills/usual-design/SKILL.md')));
+  await assert.rejects(readFile(path.join(root, '.agents/skills/usual-ui/SKILL.md')));
   await applySetupPlan(plan);
   assert.ok((await readFile(path.join(root, 'AGENTS.md'), 'utf8')).startsWith(instructions));
   const after = await readFile(path.join(root, 'package.json'), 'utf8');
-  assert.equal(after.replace(',\n    "lint:design": "usual-design check"', ''), before);
+  assert.equal(after.replace(',\n    "lint:design": "usual-ui check"', ''), before);
   assert.equal(JSON.parse(after).scripts.test, 'existing command');
   assert.match(
-    await readFile(path.join(root, '.claude/skills/usual-design/SKILL.md'), 'utf8'),
-    /name: usual-design/,
+    await readFile(path.join(root, '.claude/skills/usual-ui/SKILL.md'), 'utf8'),
+    /name: usual-ui/,
   );
   assert.deepEqual((await planSetup(root, 'both')).changes, []);
 });
 
 test('a custom skill conflict prevents all setup writes', async () => {
   const root = await fixture();
-  await mkdir(path.join(root, '.agents/skills/usual-design'), { recursive: true });
-  await writeFile(path.join(root, '.agents/skills/usual-design/SKILL.md'), 'Custom skill');
+  await mkdir(path.join(root, '.agents/skills/usual-ui'), { recursive: true });
+  await writeFile(path.join(root, '.agents/skills/usual-ui/SKILL.md'), 'Custom skill');
   const plan = await planSetup(root, 'codex');
   assert.ok(plan.conflicts.some((conflict) => conflict.includes('user edits')));
   await assert.rejects(applySetupPlan(plan), /conflicts/);
   assert.equal(
-    await readFile(path.join(root, '.agents/skills/usual-design/SKILL.md'), 'utf8'),
+    await readFile(path.join(root, '.agents/skills/usual-ui/SKILL.md'), 'utf8'),
     'Custom skill',
   );
   await assert.rejects(readFile(path.join(root, 'AGENTS.md')));
+});
+
+test('legacy setup requires review without writing duplicate integrations', async () => {
+  const root = await fixture();
+  await mkdir(path.join(root, '.usual-design'));
+  const original = '{"version":1,"files":{}}\n';
+  await writeFile(path.join(root, '.usual-design/setup.json'), original);
+  const plan = await planSetup(root, 'both', { hooks: true });
+  assert.match(plan.conflicts.join('\n'), /Legacy usual-design setup found/);
+  assert.deepEqual(plan.changes, []);
+  await assert.rejects(applySetupPlan(plan), /conflicts/);
+  assert.equal(await readFile(path.join(root, '.usual-design/setup.json'), 'utf8'), original);
+  await assert.rejects(readFile(path.join(root, '.usual-ui/setup.json')));
+});
+
+test('legacy instructions and hooks without a registry cannot be duplicated', async () => {
+  const root = await fixture();
+  const instructions = '<!-- usual-design:begin -->\nCustom policy\n<!-- usual-design:end -->';
+  await writeFile(path.join(root, 'AGENTS.md'), instructions);
+  await mkdir(path.join(root, '.codex'));
+  const hooks = JSON.stringify({
+    hooks: { Stop: [{ hooks: [{ command: 'node .usual-design/hook.cjs codex' }] }] },
+  });
+  await writeFile(path.join(root, '.codex/hooks.json'), hooks);
+  const plan = await planSetup(root, 'codex', { hooks: true });
+  assert.match(plan.conflicts.join('\n'), /legacy usual-design instructions/);
+  assert.match(plan.conflicts.join('\n'), /hook differs/);
+  await assert.rejects(applySetupPlan(plan), /conflicts/);
+  assert.equal(await readFile(path.join(root, 'AGENTS.md'), 'utf8'), instructions);
+  assert.equal(await readFile(path.join(root, '.codex/hooks.json'), 'utf8'), hooks);
 });
 
 test('modified managed instructions and changed npm scripts require manual review', async () => {
@@ -118,7 +148,7 @@ test('setup rejects symlink escapes and stale previews before writing', async ()
   const unsafe = await planSetup(root, 'codex');
   assert.ok(unsafe.conflicts.some((conflict) => conflict.includes('symbolic link')));
   await assert.rejects(applySetupPlan(unsafe));
-  await assert.rejects(readFile(path.join(outside, 'skills/usual-design/SKILL.md')));
+  await assert.rejects(readFile(path.join(outside, 'skills/usual-ui/SKILL.md')));
   await rm(path.join(root, '.agents'));
   const stale = await planSetup(root, 'codex');
   await writeFile(path.join(root, 'package.json'), '{"name":"changed"}');
@@ -172,10 +202,7 @@ test('portable setup uses a shared skill and does not claim native installation'
   const root = await fixture();
   const plan = await applySetup(root, 'portable', { hooks: true });
   assert.ok(plan.notices.some((notice) => notice.includes('No native hooks')));
-  assert.match(
-    await readFile(path.join(root, 'docs/usual-design/SKILL.md'), 'utf8'),
-    /name: usual-design/,
-  );
+  assert.match(await readFile(path.join(root, 'docs/usual-ui/SKILL.md'), 'utf8'), /name: usual-ui/);
   await assert.rejects(readFile(path.join(root, '.codex/hooks.json')));
 });
 
@@ -184,7 +211,7 @@ test('commit hook propagates checker failures and refuses to replace an existing
   await exec('git', ['init', '--quiet'], { cwd: root });
   await applySetup(root, 'portable', { commitHook: true });
   await mkdir(path.join(root, 'node_modules/.bin'), { recursive: true });
-  const bin = path.join(root, 'node_modules/.bin/usual-design');
+  const bin = path.join(root, 'node_modules/.bin/usual-ui');
   await writeFile(bin, '#!/bin/sh\nexit 0\n', { mode: 0o755 });
   const args = [
     '-c',
@@ -324,7 +351,7 @@ test('custom manifest paths remain safe data through npm, native hooks, and comm
   await mkdir(path.join(root, 'node_modules/@usualui/lint/dist'), { recursive: true });
   const fake =
     '#!/usr/bin/env node\nprocess.stdout.write(JSON.stringify(process.argv.slice(2)));\n';
-  await writeFile(path.join(root, 'node_modules/.bin/usual-design'), fake, { mode: 0o755 });
+  await writeFile(path.join(root, 'node_modules/.bin/usual-ui'), fake, { mode: 0o755 });
   await writeFile(path.join(root, 'node_modules/@usualui/lint/dist/cli.js'), fake);
   const script = await exec('npm', ['run', '--silent', 'lint:design'], { cwd: root });
   assert.deepEqual(JSON.parse(script.stdout), ['check', '--config', configPath]);

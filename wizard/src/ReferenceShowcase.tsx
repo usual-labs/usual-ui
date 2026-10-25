@@ -1,215 +1,168 @@
-import type { PreviewValues } from '../../src/onboarding-types';
+import { useEffect, useId, useRef, useState, type CSSProperties } from 'react';
+import { previewSlots, type PreviewValues } from '../../src/onboarding-types';
+import type { Category } from '../../src/types';
 import { previewStyles } from './preview-styles';
-import { safeColor } from './model';
+import { DesignSystemSample } from './DesignSystemSample';
+import { ComponentSamples } from './ComponentSamples';
+import { DashboardSample, CRMSample, FinanceSample } from './BusinessSamples';
+import { MailSample, ChatSample } from './MessageSamples';
 
-const slots = [
-  'primary',
-  'onPrimary',
-  'surface',
-  'onSurface',
-  'muted',
-  'border',
-  'focus',
-  'bodySize',
-  'headingSize',
-  'lineHeight',
-  'fontFamily',
-  'gap',
-  'padding',
-  'controlRadius',
-  'cardRadius',
-];
+const pages = [
+  ['system', 'Design system'],
+  ['components', 'Components'],
+  ['dashboard', 'Dashboard'],
+  ['mail', 'Mail'],
+  ['chat', 'Chat'],
+  ['crm', 'CRM'],
+  ['finance', 'Finance'],
+] as const;
 
-/** Compatibility view only. Exact project components live in the separate showcase. */
+/** Owned examples only. Exact project components stay in the separate showcase. */
 export function ReferenceShowcase({
   values,
   theme,
+  activeCategory,
+  viewport = 'fit',
+  exploring = false,
 }: {
   values: PreviewValues;
   theme: 'light' | 'dark';
+  activeCategory?: Category;
+  viewport?: 'fit' | 'tablet' | 'phone';
+  exploring?: boolean;
 }) {
+  const [page, setPage] = useState<(typeof pages)[number][0]>('system');
+  const id = useId();
+  const container = useRef<HTMLDivElement>(null);
+  const tabs = useRef<HTMLDivElement>(null);
   const { style, unavailable } = previewStyles(values);
-  const missing = slots.filter((slot) => !Object.hasOwn(values, slot));
+  const missing = Object.values(previewSlots)
+    .flat()
+    .filter((slot) => !Object.hasOwn(values, slot));
+
+  useEffect(() => {
+    const scroll = container.current;
+    if (!scroll) return;
+    const section =
+      page === 'system' && activeCategory
+        ? scroll.querySelector<HTMLElement>(`[data-preview-category~="${activeCategory}"]`)
+        : null;
+    // Move only the preview canvas; preserve the chosen example across wizard steps.
+    scroll.scrollTop =
+      section && !window.matchMedia('(max-width: 800px)').matches
+        ? section.getBoundingClientRect().top -
+          scroll.getBoundingClientRect().top +
+          scroll.scrollTop -
+          24
+        : 0;
+  }, [page, activeCategory]);
+
+  useEffect(() => {
+    const navigation = tabs.current;
+    if (!navigation) return;
+    function reveal() {
+      const active = navigation!.querySelector<HTMLElement>('[aria-selected="true"]');
+      if (!active) return;
+      const outer = navigation!.getBoundingClientRect();
+      const inner = active.getBoundingClientRect();
+      if (inner.left < outer.left) navigation!.scrollLeft += inner.left - outer.left - 8;
+      else if (inner.right > outer.right) navigation!.scrollLeft += inner.right - outer.right + 8;
+    }
+    reveal();
+    const observer = new ResizeObserver(reveal);
+    observer.observe(navigation);
+    return () => observer.disconnect();
+  }, [page]);
+
   return (
-    <div className="reference-scroll">
-      <details className="reference-limits">
-        <summary>Reference preview — connect your project for exact components and fonts</summary>
-        <p>
-          This is not a render of your application. Ask your onboarding agent to prepare the project
-          showcase using the installed skill’s showcase guide.
-        </p>
-        {missing.length > 0 && <p>Neutral defaults: {missing.join(', ')}.</p>}
-        {unavailable.length > 0 && <p>Unavailable: {unavailable.join('; ')}.</p>}
-        <p>
-          Custom fonts, states, and component variants are rendered by the project showcase. This
-          reference uses system fonts.
-        </p>
-      </details>
-      <div className={`design-sample ${theme}`} style={style}>
-        <section className="sample-foundations" aria-label="Color palette">
-          <h3>Color palette</h3>
-          <div className="sample-palette">
-            {(['primary', 'surface', 'onSurface', 'muted', 'border', 'focus'] as const).map(
-              (slot) => (
-                <div key={slot}>
-                  <div className="sample-color" style={{ background: `var(--sample-${slot})` }} />
-                  <strong>{slot}</strong>
-                  <code>{safeColor(values[slot] ?? '') ?? 'Default'}</code>
-                </div>
-              ),
+    <div className="reference-gallery">
+      <div className="preview-pages" role="tablist" aria-label="Preview examples" ref={tabs}>
+        {pages.map(([key, label], index) => (
+          <button
+            key={key}
+            id={`${id}-${key}`}
+            type="button"
+            role="tab"
+            aria-selected={page === key}
+            aria-controls={`${id}-panel`}
+            tabIndex={page === key ? 0 : -1}
+            onClick={() => setPage(key)}
+            onKeyDown={(event) => {
+              const next =
+                event.key === 'ArrowRight'
+                  ? (index + 1) % pages.length
+                  : event.key === 'ArrowLeft'
+                    ? (index - 1 + pages.length) % pages.length
+                    : event.key === 'Home'
+                      ? 0
+                      : event.key === 'End'
+                        ? pages.length - 1
+                        : null;
+              if (next === null) return;
+              event.preventDefault();
+              setPage(pages[next][0]);
+              document.getElementById(`${id}-${pages[next][0]}`)?.focus({ preventScroll: true });
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div
+        className="reference-scroll"
+        ref={container}
+        role="tabpanel"
+        id={`${id}-panel`}
+        aria-labelledby={`${id}-${page}`}
+        tabIndex={0}
+      >
+        <div
+          className="reference-canvas"
+          style={
+            {
+              '--preview-width':
+                viewport === 'tablet' ? '768px' : viewport === 'phone' ? '390px' : '100%',
+            } as CSSProperties
+          }
+        >
+          <div className="preview-example-note">
+            <span>
+              {exploring ? 'Custom reference theme' : 'Live reference · your selected style'}
+            </span>
+            <span>Sample content</span>
+          </div>
+          <div className={`design-sample app-sample ${theme}`} style={style}>
+            {page === 'system' ? (
+              <DesignSystemSample values={values} />
+            ) : page === 'components' ? (
+              <ComponentSamples />
+            ) : page === 'dashboard' ? (
+              <DashboardSample />
+            ) : page === 'mail' ? (
+              <MailSample />
+            ) : page === 'chat' ? (
+              <ChatSample />
+            ) : page === 'crm' ? (
+              <CRMSample />
+            ) : (
+              <FinanceSample />
             )}
           </div>
-        </section>
-        <section className="sample-foundations" aria-label="Typography specimens">
-          <h3>Typography</h3>
-          <div className="sample-type-row">
-            <span>Heading</span>
-            <h2>The details make the system.</h2>
-          </div>
-          <div className="sample-type-row">
-            <span>Subheading</span>
-            <h4>Designed to work together</h4>
-          </div>
-          <div className="sample-type-row">
-            <span>Body</span>
+          <details className="reference-limits">
+            <summary>About these examples &amp; preview coverage</summary>
             <p>
-              Choose a clear, consistent foundation for every screen. The same type, spacing, and
-              colors connect each part of your product.
+              These are interactive reference examples, not a render of your application. Sample
+              interactions stay in this preview and reset when you switch examples.
             </p>
-          </div>
-          <div className="sample-type-row">
-            <span>Label / code</span>
-            <div>
-              <label>Project settings</label>
-              <code>const design = 'intentional';</code>
-            </div>
-          </div>
-        </section>
-        <div className="sample-grid">
-          <section className="sample-card">
-            <h3>Actions & states</h3>
-            <p>Primary, secondary, and disabled</p>
-            <div className="sample-actions">
-              <button type="button">Create project</button>
-              <button className="sample-secondary" type="button">
-                View details
-              </button>
-              <button disabled>Unavailable</button>
-            </div>
-            <div className="sample-badges">
-              <span>Draft</span>
-              <span>In review</span>
-              <span>Published</span>
-            </div>
-          </section>
-          <section className="sample-card">
-            <h3>Inputs & selection</h3>
-            <p>Labels, help text, and control sizes</p>
-            <label htmlFor="sample-name">Project name</label>
-            <input id="sample-name" placeholder="Project name" defaultValue="Design system" />
-            <label htmlFor="sample-team">Team</label>
-            <select id="sample-team" defaultValue="Design">
-              <option>Design</option>
-              <option>Engineering</option>
-            </select>
-            <div className="sample-actions">
-              <label>
-                <input type="checkbox" defaultChecked /> Email updates
-              </label>
-              <label>
-                <input type="radio" name="sample-access" defaultChecked /> Private
-              </label>
-            </div>
-            <label htmlFor="sample-notes">Description</label>
-            <textarea id="sample-notes" rows={2} placeholder="Add a description…" />
-          </section>
-          <section className="sample-card sample-filled">
-            <span className="sample-caption">Filled card</span>
-            <h3>Workspace overview</h3>
-            <p>Content, controls, and metrics in context.</p>
-            <div className="sample-stats">
-              <div>
-                <strong>24</strong>
-                <span>Components</span>
-              </div>
-              <div>
-                <strong>8</strong>
-                <span>Patterns</span>
-              </div>
-              <div>
-                <strong>2</strong>
-                <span>Themes</span>
-              </div>
-            </div>
-            <div className="sample-actions">
-              <button type="button">Open workspace</button>
-              <button type="button" className="sample-secondary">
-                Settings
-              </button>
-            </div>
-          </section>
-          <section className="sample-card">
-            <h3>Data & navigation</h3>
-            <div className="sample-tabs">
-              <span>Overview</span>
-              <span>Activity</span>
-              <span>Members</span>
-            </div>
-            <table>
-              <caption className="sr-only">Example project activity</caption>
-              <thead>
-                <tr>
-                  <th>Project</th>
-                  <th>Status</th>
-                  <th>Updated</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Website</td>
-                  <td>Published</td>
-                  <td>Today</td>
-                </tr>
-                <tr>
-                  <td>Mobile app</td>
-                  <td>In review</td>
-                  <td>Yesterday</td>
-                </tr>
-                <tr>
-                  <td>Workspace</td>
-                  <td>Draft</td>
-                  <td>Oct 18</td>
-                </tr>
-              </tbody>
-            </table>
-          </section>
+            {missing.length > 0 && <p>Neutral defaults: {missing.join(', ')}.</p>}
+            {unavailable.length > 0 && <p>Unavailable: {unavailable.join('; ')}.</p>}
+            <p>
+              Connect a project showcase for exact components, fonts, states, and variants.
+              References use system fonts; component choices do not replace these built-in
+              specimens.
+            </p>
+          </details>
         </div>
-        <section className="sample-foundations" aria-label="Spacing and shape specimens">
-          <h3>Spacing & shape</h3>
-          <div className="sample-geometry">
-            <div>
-              <span>Content padding</span>
-              <div className="sample-padding">
-                <span>Content</span>
-              </div>
-            </div>
-            <div>
-              <span>Component gap</span>
-              <div className="sample-gap">
-                <span />
-                <span />
-                <span />
-              </div>
-            </div>
-            <div>
-              <span>Card / control radius</span>
-              <div className="sample-radius">
-                <span />
-                <button type="button">Control</button>
-              </div>
-            </div>
-          </div>
-        </section>
       </div>
     </div>
   );

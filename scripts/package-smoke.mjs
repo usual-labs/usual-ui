@@ -6,7 +6,7 @@ import { resolve, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const project = resolve('.');
-const artifacts = join(project, '.usual-design/artifacts');
+const artifacts = join(project, '.usual-ui/artifacts');
 await mkdir(artifacts, { recursive: true });
 const [packed] = JSON.parse(
   execFileSync('npm', ['pack', '--ignore-scripts', '--json', '--pack-destination', artifacts], {
@@ -18,13 +18,27 @@ for (const required of [
   'dist/cli.js',
   'dist/showcase.js',
   'dist/showcase.d.ts',
+  'dist/playwright.js',
+  'dist/playwright.d.ts',
+  'dist/runtime-report.js',
+  'dist/runtime-report.d.ts',
+  'dist/runtime-types.js',
+  'dist/runtime-types.d.ts',
+  'docs/runtime.md',
+  'docs/numeric-rules.md',
+  'docs/renaming.md',
+  'examples/runtime/design.spec.ts',
+  'examples/runtime/fixture.html',
+  'examples/runtime/playwright.config.ts',
+  'examples/runtime/policy.json',
   'schema/manifest.schema.json',
   'schema/onboarding.schema.json',
-  'skills/usual-design/SKILL.md',
-  'skills/usual-design-onboarding/SKILL.md',
-  'skills/usual-design-onboarding/references/proposal.md',
-  'skills/usual-design-onboarding/references/showcase.md',
+  'skills/usual-ui/SKILL.md',
+  'skills/usual-ui-onboarding/SKILL.md',
+  'skills/usual-ui-onboarding/references/proposal.md',
+  'skills/usual-ui-onboarding/references/showcase.md',
   'dist/wizard/index.html',
+  'dist/wizard/favicon.svg',
 ]) {
   assert.ok(
     packed.files.some((file) => file.path === required),
@@ -33,7 +47,7 @@ for (const required of [
 }
 assert.ok(
   !packed.files.some((file) =>
-    /(^|\/)(?:\.env(?:\.|$)|node_modules\/|fixtures\/|test\/|\.usual-design\/)/.test(file.path),
+    /(^|\/)(?:\.env(?:\.|$)|node_modules\/|fixtures\/|test\/|\.usual-ui\/)/.test(file.path),
   ),
 );
 
@@ -53,7 +67,59 @@ try {
     ['install', '--ignore-scripts', '--omit=dev', join(artifacts, packed.filename)],
     { cwd: temp, stdio: 'pipe' },
   );
-  const executable = join(temp, 'node_modules/.bin/usual-design');
+  const runtimePackages = ['lintapple', 'playwright', 'playwright-core', 'axe-core'];
+  const installedTree = JSON.parse(
+    execFileSync('npm', ['ls', '--all', '--omit=dev', '--json'], {
+      cwd: temp,
+      encoding: 'utf8',
+    }),
+  );
+  function assertStaticDependencies(tree) {
+    for (const [name, dependency] of Object.entries(tree.dependencies ?? {})) {
+      // npm ls represents missing optional peers as empty objects, not installed packages.
+      assert.ok(
+        !runtimePackages.includes(name) || Object.keys(dependency).length === 0,
+        `Static install unexpectedly includes ${name}`,
+      );
+      assertStaticDependencies(dependency);
+    }
+  }
+  assertStaticDependencies(installedTree);
+  const optionalProbe = spawnSync(
+    process.execPath,
+    [
+      '--input-type=module',
+      '--eval',
+      `import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { auditPage, expectDesign } from '@usualui/lint/playwright';
+assert.equal(typeof auditPage, 'function');
+assert.equal(typeof expectDesign, 'function');
+const resolveFromAdapter = createRequire(import.meta.resolve('@usualui/lint/playwright'));
+for (const name of ${JSON.stringify(runtimePackages)}) {
+  assert.throws(() => resolveFromAdapter.resolve(name), { code: 'MODULE_NOT_FOUND' });
+}
+const policy = JSON.parse(await readFile(new URL(import.meta.resolve('@usualui/lint/examples/runtime/policy.json')), 'utf8'));
+const unusedPage = new Proxy({}, {
+  get() { throw new Error('The missing-dependency path must not access a page.'); },
+  has() { throw new Error('The missing-dependency path must not inspect a page.'); },
+});
+await assert.rejects(
+  auditPage(unusedPage, { policy, state: 'package smoke', theme: 'light' }),
+  /Rendered checks require optional dependencies: npm install -D lintapple@0\\.1\\.20 playwright@1\\.63\\.0/,
+);
+`,
+    ],
+    { cwd: temp, encoding: 'utf8', timeout: 30_000 },
+  );
+  if (optionalProbe.error) throw optionalProbe.error;
+  assert.equal(
+    optionalProbe.status,
+    0,
+    `Packaged optional entrypoint: ${optionalProbe.stderr || optionalProbe.stdout}`,
+  );
+  const executable = join(temp, 'node_modules/.bin/usual-ui');
   const commands = [];
   function run(label, args, expectedStatus = 0, extra = {}) {
     const result = spawnSync(executable, args, {
@@ -71,7 +137,13 @@ try {
   const version = run('installed executable --version', ['--version']).trim();
   const metadata = JSON.parse(await readFile(join(project, 'package.json'), 'utf8'));
   assert.equal(version, metadata.version);
-  assert.match(run('help', ['--help']), /check/);
+  assert.match(run('help', ['--help']), /Usage: usual-ui/);
+  assert.equal(
+    execFileSync(join(temp, 'node_modules/.bin/usual-design'), ['--version'], {
+      encoding: 'utf8',
+    }).trim(),
+    version,
+  );
   const invalid = JSON.parse(run('unknown command', ['unknown-command', '--json'], 2));
   assert.equal(typeof invalid.error, 'string');
   assert.equal(invalid.findings, undefined);
@@ -97,7 +169,7 @@ try {
     'export const App = () => <a data-intent="primary" className="bg-blue-600 text-white rounded-xl">Start</a>;',
   );
   const guide = await readFile(
-    join(temp, 'node_modules/@usualui/lint/skills/usual-design-onboarding/references/proposal.md'),
+    join(temp, 'node_modules/@usualui/lint/skills/usual-ui-onboarding/references/proposal.md'),
     'utf8',
   );
   await writeFile(join(guided, 'proposal.json'), guide.match(/```json\n([\s\S]*?)\n```/)[1]);
@@ -121,7 +193,7 @@ try {
   assert.deepEqual(audit.errors, []);
   assert.ok(audit.findings.some((finding) => finding.kind === 'decision'));
   assert.equal(
-    JSON.parse(await readFile(join(temp, 'docs/usual-design/audit.json'), 'utf8')).snapshot,
+    JSON.parse(await readFile(join(temp, 'docs/usual-ui/audit.json'), 'utf8')).snapshot,
     audit.snapshot,
   );
   const inactive = JSON.parse(run('inactive check', ['check', '--json']));
@@ -141,31 +213,25 @@ try {
   assert.deepEqual(setup.conflicts, []);
   assert.ok(setup.changes.some((change) => change.path.endsWith('SKILL.md')));
   assert.equal(await readFile(join(temp, 'package.json'), 'utf8'), beforeSetup);
-  await assert.rejects(readFile(join(temp, '.agents/skills/usual-design/SKILL.md')));
+  await assert.rejects(readFile(join(temp, '.agents/skills/usual-ui/SKILL.md')));
   const applied = JSON.parse(
     run('setup --write', ['setup', '--host', 'both', '--hooks', '--write', '--json']),
   );
   assert.deepEqual(applied.conflicts, []);
   for (const hostPath of [
-    '.agents/skills/usual-design/SKILL.md',
-    '.claude/skills/usual-design/SKILL.md',
-    '.agents/skills/usual-design-onboarding/SKILL.md',
-    '.claude/skills/usual-design-onboarding/SKILL.md',
+    '.agents/skills/usual-ui/SKILL.md',
+    '.claude/skills/usual-ui/SKILL.md',
+    '.agents/skills/usual-ui-onboarding/SKILL.md',
+    '.claude/skills/usual-ui-onboarding/SKILL.md',
   ]) {
-    assert.match(await readFile(join(temp, hostPath), 'utf8'), /name: usual-design/);
+    assert.match(await readFile(join(temp, hostPath), 'utf8'), /name: usual-ui/);
   }
   assert.equal(
-    await readFile(
-      join(temp, '.claude/skills/usual-design-onboarding/references/proposal.md'),
-      'utf8',
-    ),
+    await readFile(join(temp, '.claude/skills/usual-ui-onboarding/references/proposal.md'), 'utf8'),
     guide,
   );
   assert.match(
-    await readFile(
-      join(temp, '.claude/skills/usual-design-onboarding/references/showcase.md'),
-      'utf8',
-    ),
+    await readFile(join(temp, '.claude/skills/usual-ui-onboarding/references/showcase.md'), 'utf8'),
     /connectShowcase/,
   );
   const repeated = JSON.parse(
@@ -200,6 +266,7 @@ try {
       assert.ok((await response.text()).length > 0);
       if (asset.endsWith('.css')) {
         const css = await (await fetch(new URL(asset, wizard.origin))).text();
+        assert.doesNotMatch(css, /url\(["']?data:font/, 'Inline fonts violate the wizard CSP');
         const fonts = [...css.matchAll(/url\(["']?([^()"']+\.woff2)["']?\)/g)];
         assert.ok(fonts.length, 'Bundled Manrope font missing');
         for (const [, font] of fonts) {
@@ -222,10 +289,16 @@ try {
   const result = {
     version,
     runtime: process.version,
-    artifact: '.usual-design/artifacts/' + packed.filename,
+    artifact: '.usual-ui/artifacts/' + packed.filename,
     files: packed.entryCount,
     unpackedBytes: packed.unpackedSize,
     independentCheck: 'passed',
+    staticDependencyIsolation: { status: 'passed', absentPackages: runtimePackages },
+    optionalEntrypoint: {
+      import: 'passed',
+      missingDependencyError: 'passed',
+      pageAccessed: false,
+    },
     packagedSkills: 'passed',
     packagedWizard: 'passed',
     bundledAssets,

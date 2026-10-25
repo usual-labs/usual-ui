@@ -1,41 +1,12 @@
-import { useState } from 'react';
-import { Button } from '../components/Button';
-import { CodeBlock } from '../components/CodeBlock';
+import { DesignExamples } from '../components/DesignExamples';
 import { SectionHeading } from '../components/SectionHeading';
 
-const examples = [
-  {
-    title: 'Approved values',
-    before: '<div className="bg-fuchsia-500 p-7">\n  Project overview\n</div>',
-    after: '<div className="bg-surface p-6">\n  Project overview\n</div>',
-    explanation:
-      'Use the colors and spacing approved by this project. A valid Tailwind class can still violate its design contract.',
-  },
-  {
-    title: 'Semantic usage',
-    before: '<a data-intent="primary"\n   className="bg-muted text-surface">\n  Get started\n</a>',
-    after: '<a data-intent="primary"\n   className="bg-accent text-surface">\n  Get started\n</a>',
-    explanation:
-      'Both colors may be approved. An explicit semantic rule requires the action color for primary actions.',
-  },
-  {
-    title: 'Shared components',
-    before: '<button onClick={save}>\n  Save changes\n</button>',
-    after:
-      'import { Button } from "./ui/Button";\n\n<Button onClick={save}>\n  Save changes\n</Button>',
-    explanation:
-      'Require the approved component for a configured native element. Its own implementation can be explicitly excluded.',
-  },
-];
-
 export function Design() {
-  const [selected, setSelected] = useState(0);
-  const example = examples[selected];
   return (
     <>
       <section className="mx-auto max-w-6xl px-6 pb-16 pt-16">
         <p className="mb-6 font-mono text-xs uppercase tracking-widest text-accent">
-          Usual Design · React + Tailwind v4
+          Usual UI · React + Tailwind v4
         </p>
         <h1 className="max-w-4xl text-display font-semibold tracking-tight">
           Keep the design.
@@ -48,7 +19,7 @@ export function Design() {
         </p>
         <div className="mt-8 flex flex-wrap items-center gap-6">
           <a
-            href="/design/docs/"
+            href="/ui/docs/"
             data-intent="primary"
             className="inline-flex items-center gap-6 rounded-panel bg-accent px-5 py-3 font-medium text-surface hover:bg-accent-dark"
           >
@@ -71,29 +42,7 @@ export function Design() {
             Start with your own design system. Usual checks approved values, explicit semantic
             intent, and shared component usage.
           </SectionHeading>
-          <div className="mb-6 flex flex-wrap gap-3" aria-label="Example categories">
-            {examples.map((item, index) => (
-              <Button
-                key={item.title}
-                onClick={() => setSelected(index)}
-                aria-pressed={selected === index}
-              >
-                {item.title}
-                {selected === index ? ' ✓' : ''}
-              </Button>
-            ))}
-          </div>
-          <div className="grid gap-5 lg:grid-cols-2">
-            <CodeBlock label="Illustrative violation" code={example.before} />
-            <CodeBlock label="Approved repair" code={example.after} />
-          </div>
-          <p className="mt-5 max-w-3xl leading-relaxed text-muted" aria-live="polite">
-            {example.explanation}
-          </p>
-          <p className="mt-3 text-sm text-muted">
-            These examples explain the rules. The CLI reports findings from your actual files and
-            manifest.
-          </p>
+          <DesignExamples />
         </div>
       </section>
       <section className="mx-auto max-w-6xl px-6 pt-20">
@@ -152,10 +101,7 @@ export function Design() {
             fonts. The checker never imports application code. Project showcases require
             @usualui/lint 0.3.0 or later.
           </p>
-          <a
-            href="/design/docs/"
-            className="mt-6 inline-block font-medium text-accent hover:underline"
-          >
+          <a href="/ui/docs/" className="mt-6 inline-block font-medium text-accent hover:underline">
             Read the setup guide →
           </a>
         </div>

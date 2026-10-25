@@ -1,3 +1,5 @@
+@import url('./workshop-flow.css');
+
 .token-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -5,10 +7,10 @@
   margin: 22px 0;
 }
 .token-card {
-  border: 0;
-  background: var(--paper);
-  border-radius: 0;
-  padding: 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 16px;
   min-width: 0;
 }
 .token-card h3 {
@@ -18,17 +20,15 @@
 .token-card .source {
   display: block;
   margin-top: 12px;
-  font-size: 10px;
+  font-size: 11px;
 }
 .token-value {
   color: var(--muted);
   display: block;
-  font-size: 11px;
+  font-size: 12px;
 }
 .observed-values {
-  border-top: 1px solid var(--line);
-  margin-top: 24px;
-  padding-top: 22px;
+  margin-top: 16px;
 }
 .observed-values > h3 {
   margin-bottom: 12px;
@@ -43,9 +43,9 @@
   margin-top: 18px;
 }
 .component-card {
-  border: 0;
+  border: 1px solid var(--line);
   background: var(--paper);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 16px;
   min-width: 0;
 }
@@ -75,7 +75,7 @@
   flex-direction: column;
   gap: 10px;
   background: var(--paper);
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
 }
 .specimen-object {
@@ -95,9 +95,7 @@
   border-radius: 3px;
 }
 .specimen-label {
-  font-size: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 10px;
   color: var(--muted);
 }
 .code-editor {
@@ -107,10 +105,9 @@
   tab-size: 2;
 }
 .policy-review {
+  border: 1px solid var(--line);
   background: var(--paper);
-  border: 0;
-  background: var(--paper);
-  border-radius: 0;
+  border-radius: 10px;
   padding: 20px;
   margin-top: 20px;
 }
@@ -126,7 +123,7 @@
   border: 1px dashed var(--line-strong);
   background: var(--paper);
   padding: 20px;
-  border-radius: 0;
+  border-radius: 10px;
   margin-top: 22px;
 }
 .draft-finding-list {
@@ -155,7 +152,7 @@
 .policy-fieldset {
   padding: 16px;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 8px;
 }
 .policy-fieldset legend {
   font-size: 15px;
@@ -210,7 +207,7 @@
   gap: 8px 18px;
   padding: 14px;
   border: 1px solid var(--line);
-  border-radius: 0;
+  border-radius: 8px;
   background: var(--paper);
   margin: 20px 0;
   font-size: 12px;
@@ -239,10 +236,10 @@
   margin-top: 20px;
 }
 .audit-group {
-  border: 0;
-  background: var(--paper);
-  border-radius: 0;
-  padding: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 24px;
 }
 .group-heading {
   display: flex;
@@ -251,7 +248,7 @@
   align-items: flex-start;
 }
 .group-heading p {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--muted);
   margin: 8px 0 0;
 }
@@ -266,12 +263,25 @@
   display: inline-flex;
   gap: 8px;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
 }
 .finding-list {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+.finding-pattern {
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.finding-pattern > details {
+  margin-top: 12px;
+}
+.finding-body pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .finding {
   display: flex;
@@ -308,16 +318,16 @@
   margin-bottom: 7px;
 }
 .finding-heading > code {
-  font-size: 10px;
+  font-size: 11px;
   color: var(--muted);
 }
 .finding p {
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.6;
   margin-bottom: 7px;
 }
 .finding .source {
-  font-size: 10px;
+  font-size: 11px;
 }
 .finding summary {
   font-size: 11px;
@@ -328,7 +338,7 @@
   border-radius: 3px;
   background: #f7e7db;
   color: #7a4225;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 650;
 }
 .kind-coverage {
@@ -339,55 +349,6 @@
   background: #e8e9f2;
   color: #4a507a;
 }
-.repair-actions {
-  position: sticky;
-  bottom: 12px;
-  z-index: 2;
-  border: 1px solid var(--line);
-  background: var(--paper);
-  border-radius: 0;
-  padding: 14px;
-
-  margin-bottom: 18px;
-}
-.repair-actions > span {
-  font-size: 11px;
-  margin-right: auto;
-}
-.review-groups {
-  padding: 0;
-  list-style: none;
-  margin: 20px 0;
-  border-top: 1px solid var(--line);
-}
-.review-groups li {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  border-bottom: 1px solid var(--line);
-  padding: 12px 0;
-  font-size: 13px;
-}
-.review-groups span {
-  color: var(--muted);
-}
-.source-list {
-  padding-left: 20px;
-  font-size: 12px;
-  max-height: 340px;
-  overflow-y: auto;
-  line-height: 1.7;
-}
-.source-list li {
-  margin-bottom: 9px;
-}
-.handoff-prompt {
-  min-height: 170px;
-  font-family: 'SFMono-Regular', Consolas, monospace;
-  font-size: 12px;
-  margin-top: 10px;
-}
-
 @media (max-width: 680px) {
   .token-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -414,8 +375,5 @@
   .group-heading {
     flex-wrap: wrap;
     gap: 9px;
-  }
-  .repair-actions {
-    position: static;
   }
 }

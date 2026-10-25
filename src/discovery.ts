@@ -9,7 +9,8 @@ const generatedDirectories = new Set([
   'node_modules',
   'dist',
   '.git',
-  '.usual-design',
+  '.usual-ui',
+  '.usual-design', // Historical generated output stays outside source analysis.
   '.next',
   '.nuxt',
   '.output',
@@ -22,6 +23,7 @@ const generatedDirectories = new Set([
 export const alwaysIgnored = [
   ...[...generatedDirectories].map((name) => `**/${name}/**`),
   '**/*.d.ts',
+  'docs/usual-ui/**',
   'docs/usual-design/**',
 ];
 export async function discover(

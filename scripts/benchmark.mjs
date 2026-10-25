@@ -132,9 +132,9 @@ try {
     projects: [await profile('ember-small', small), await profile('synthetic-500-jsx', large)],
     note: 'Wall time for a fresh Node process per sample, including startup. First sample is process-cold, not a flushed OS filesystem cache. Audit includes persistence; hook timings invoke the native handler protocol directly, without a real agent client. Synthetic small source files are not a real-world timing guarantee. No daemon or persistent cache.',
   };
-  await mkdir(join(project, '.usual-design/artifacts'), { recursive: true });
+  await mkdir(join(project, '.usual-ui/artifacts'), { recursive: true });
   await writeFile(
-    join(project, '.usual-design/artifacts/benchmark.json'),
+    join(project, '.usual-ui/artifacts/benchmark.json'),
     JSON.stringify(report, null, 2) + '\n',
   );
   console.log(JSON.stringify(report, null, 2));

@@ -39,7 +39,7 @@ test('refreshing repair evidence preserves manually added notes', async () => {
   try {
     const audit = await runProject(root, 'audit');
     await createPlan(root, [audit.findings[0].id], audit.snapshot);
-    const path = join(root, 'docs/usual-design/repair-progress.md');
+    const path = join(root, 'docs/usual-ui/repair-progress.md');
     const manual = (await readFile(path, 'utf8')) + '\nMy repair notes.\n';
     await writeFile(path, manual);
     await assert.rejects(saveAudit(root, audit), /manual changes/);

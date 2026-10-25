@@ -3,14 +3,21 @@
 Static React + TypeScript + Tailwind v4 pages:
 
 - `/` — Usual Labs and its first tool.
-- `/design/` — Usual Design promise, three rule examples, and workflow.
-- `/design/docs/` — local setup, manifest, repairs/activation, and coverage boundaries.
+- `/ui/` — Usual UI promise, three rule examples, and workflow.
+- `/ui/docs/` — local setup, manifest, repairs/activation, and coverage boundaries.
+- `/blog/` and `/blog/<slug>/` — static Markdown articles using the same layout and theme.
+
+Add posts in [`content/blog`](content/blog/README.md); no post registry is required. The content guide covers metadata, drafts, safe Markdown, checks and the release boundary. The included example is an unpublished draft. Build-only `blog/content.ts` validates metadata and parses safe Markdown; `blog/render.ts` owns the HTML insertion boundary. The static design audit covers the authored shell, while focused content tests cover generated article HTML. The Vite blog plugin emits complete article HTML without client-side rendering; the other pages retain their existing React entry points.
+
+The [publishing runbook](docs/agents/blog-publishing.md) owns product-claim guidance, scoped source release, hosting discovery, live checks and rollback.
+
+The [implementation note](../docs/agents/implementation/markdown-blog.md) records the source/rendering boundary and validation.
 
 No account, tracking, external font, form, hosted API, or third-party assets are used. The site’s token values, typography, and layout are a concrete **provisional design proposal**, awaiting creative review. The preview banner and crawler exclusions deliberately preserve that state.
 
 ## Run and build
 
-From the Usual Design package directory:
+From the Usual UI package directory:
 
 ```sh
 npm run dev:site

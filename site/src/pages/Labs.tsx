@@ -26,10 +26,10 @@ export function Labs() {
             Your design decisions should keep up.
           </p>
           <a
-            href="/design/"
+            href="/ui/"
             className="mt-6 inline-flex items-center gap-3 font-medium text-accent hover:underline"
           >
-            Meet Usual Design <span aria-hidden="true">↗</span>
+            Meet Usual UI <span aria-hidden="true">↗</span>
           </a>
         </div>
       </section>
@@ -40,13 +40,13 @@ export function Labs() {
               <span className="h-2 w-2 rounded-full bg-accent" />
               IN DEVELOPMENT
             </div>
-            <h2 className="text-title font-semibold tracking-tight">Usual Design</h2>
+            <h2 className="text-title font-semibold tracking-tight">Usual UI</h2>
             <p className="mt-5 max-w-md text-lg leading-relaxed text-muted">
               A design linter for AI-heavy development. Turn your tokens, component conventions, and
               semantic rules into feedback an agent can actually use.
             </p>
             <a
-              href="/design/"
+              href="/ui/"
               data-intent="primary"
               className="mt-8 inline-flex items-center gap-6 rounded-panel bg-accent px-5 py-3 font-medium text-surface hover:bg-accent-dark"
             >

@@ -1,4 +1,4 @@
-# Developing Usual Design
+# Developing Usual UI
 
 Start with [CONTRIBUTING.md](../CONTRIBUTING.md) for scope, pull requests, and community expectations. This guide describes the current source checkout, not a published package installation.
 
@@ -40,13 +40,16 @@ CLI or wizard API
 | Static helper interpretation and component/import identity    | `src/helpers.ts`, `src/imports.ts`, `src/identity.ts`                           |
 | Utility classification, observations, policy evaluation       | `src/classes.ts`, `src/observed.ts`, `src/rules.ts`                             |
 | Source spans and finding identifiers                          | `src/diagnostics.ts`                                                            |
+| Derived diagnostic groups, totals, remediation, human output  | `src/reporting.ts`                                                              |
 | Approved repairs, audits, verification, activation records    | `src/records.ts`, `src/record-validation.ts`                                    |
+| Generated audit Markdown and legacy format recognition        | `src/audit-markdown.ts`                                                         |
 | Path boundaries and safe writes                               | `src/files.ts`                                                                  |
 | Local wizard API and session boundary                         | `src/server.ts`                                                                 |
 | Existing-agent setup and hook adapters                        | `src/integrations.ts`, `src/integrations-files.ts`, `src/integrations-hooks.ts` |
 | Visual wizard and website                                     | `wizard/src/`, `site/src/`                                                      |
-| Distributed agent workflow                                    | `skills/usual-design/SKILL.md`                                                  |
-| Tests and independent sample contracts                        | `test/`, `wizard/test/`, `fixtures/`                                            |
+| Optional rendered page/frame adapter and scoped report        | `src/playwright.ts`, `src/runtime-types.ts`, `src/runtime-report.ts`            |
+| Distributed agent workflow                                    | `skills/usual-ui/SKILL.md`                                                  |
+| Tests and independent sample contracts                        | `test/`, `wizard/test/`, `site/test/`, `fixtures/`, `examples/runtime/`         |
 
 Extend the responsible layer instead of teaching the CLI or UI a second version of a rule. Keep the manifest schema, TypeScript types, validation, documentation, and tests consistent when changing the contract.
 
@@ -60,6 +63,8 @@ Extend the responsible layer instead of teaching the CLI or UI a second version 
 6. **Errors retain their meaning.** Exit `0` means no blocking findings for the selected mode; `1` means findings or unverifiable coverage; `2` means configuration or operational failure.
 7. **Local interfaces remain local.** Preserve loopback binding and wizard host, session, and origin checks. Never put session URLs or private source context in public logs.
 8. **Evidence is specific.** Unit/SSR/API tests do not establish browser usability, native-agent lifecycle execution, remote CI success, deployment, or publication.
+9. **Reporting preserves authority.** Derive summaries from raw findings; keep original IDs/evidence and exact selected/deferred repair sets. CLI presentation JSON may add `summary`; persisted records remain strict raw results. Recognize only exact known generated Markdown formats when refreshing old audits.
+10. **Rendered checks are explicit.** The Playwright entry point accepts an already prepared page/frame and explicit policy. Keep its optional engine out of the static import path. Report checked and omitted frames and current state/viewport/theme; runtime passes cannot clear source findings or activate categories.
 
 The full supported surface and exclusions live in [compatibility](compatibility.md). Source spans use zero-based, half-open UTF-16 offsets.
 
@@ -71,10 +76,12 @@ Run the smallest checks that prove the change while developing. Before requestin
 | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Analysis, rules, discovery, or manifest                   | Regression in the relevant `test/*.test.ts`; accepted, violating, and unknown cases for new support; `npm run test:core`                                   |
 | CLI commands or exit behavior                             | `test/cli.test.ts` and affected workflow tests; exercise human/JSON output and failure exits                                                               |
+| Grouped reporting and guidance                            | `test/reporting.test.ts`, `wizard/test/reporting.test.ts`; evidence retention, distinct patterns, exact selections, and legacy audit refresh               |
 | Saved records, activation, or filesystem writes           | Persistence, record-validation, workflow, and verify-plan tests covering stale/conflicting state and unchanged files                                       |
 | Wizard UI or API                                          | `npm run test:wizard`, affected core API/onboarding tests, typecheck and build; report browser evidence separately                                         |
 | Agent setup or hooks                                      | `test/integrations.test.ts`; verify repeated setup and preservation of existing user configuration; distinguish adapter tests from actual client execution |
-| Website                                                   | Typecheck/build and `npm run audit:site`; this command saves audit records in `site/docs/usual-design/`                                                    |
+| Website                                                   | `npm run test:site`, typecheck/build and `npm run audit:site`; the audit command saves records in `site/docs/usual-ui/`                                |
+| Optional rendered adapter                                 | `test/playwright.test.ts` for non-browser contracts; browser examples under `examples/runtime/` only when explicitly authorized                            |
 | Packaging, dependencies, CLI assets, or distributed skill | `npm run verify:package`; inspect the archive contents                                                                                                     |
 | Analysis performance                                      | `npm run benchmark`; compare the same workload/runtime and report measurements                                                                             |
 | Documentation or community templates                      | Check local links, changed command examples, Markdown/YAML formatting, and issue-form structure                                                            |
@@ -85,9 +92,31 @@ For one core test file, using the already installed runner:
 npx --no-install tsx --test test/core.test.ts
 ```
 
+Where sandbox restrictions prevent the `tsx` CLI from opening its IPC pipe, use
+the same installed loader directly:
+
+```sh
+node --import tsx --test test/reporting.test.ts test/playwright.test.ts
+TSX_TSCONFIG_PATH=wizard/tsconfig.json node --import tsx --test wizard/test/reporting.test.ts
+```
+
+`npm test` runs core, wizard, and site tests without launching a browser. Runtime
+tests validate the adapter with controlled page/engine doubles; the opt-in
+Playwright matrix is separate. `npm run typecheck` also checks these examples through
+`examples/tsconfig.json`, which resolves the adapter to source during development.
+Source development installs pinned `lintapple`
+and `playwright` dev dependencies. They are optional peers for published consumers,
+so static-only installations do not need them. See [runtime setup](runtime.md)
+before running the browser examples; they require provisioned Chromium and explicit
+browser authorization in this workspace.
+
 Tests create temporary targets for mutations and clean up afterward. Follow that pattern when testing writes. Do not change the checked-in fixture or a real user's project as a side effect of a test.
 
-`npm run verify:package` rebuilds, creates a local npm archive, installs it into a temporary project, and exercises the installed executable, skill assets, and wizard HTTP endpoints. It needs npm dependency access and writes evidence into ignored `.usual-design/artifacts/`. It does not publish anything or launch a browser.
+`npm run verify:package` rebuilds, creates a local npm archive, installs it into a temporary project, and exercises the installed executable, skill assets, and wizard HTTP endpoints. It needs npm dependency access and writes evidence into ignored `.usual-ui/artifacts/`. It does not publish anything or launch a browser.
+
+Package smoke also verifies that static installations omit the optional browser
+stack and can import the rendered adapter without loading it. Calling that adapter
+without its engine must provide installation guidance before accessing a page.
 
 `npm run format:check` covers source, tests, scripts, and schema files; it does not currently check Markdown or GitHub templates. Check changed documentation explicitly, for example:
 

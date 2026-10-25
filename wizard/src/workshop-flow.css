@@ -1,0 +1,159 @@
+.repair-actions {
+  position: sticky;
+  bottom: 12px;
+  z-index: 2;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px #292b300d;
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.repair-actions > span {
+  font-size: 13px;
+  margin-right: auto;
+}
+.review-groups {
+  padding: 0;
+  list-style: none;
+  margin: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.review-groups li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+  font-size: 13px;
+}
+.review-groups span {
+  color: var(--muted);
+}
+.source-list {
+  padding-left: 20px;
+  font-size: 12px;
+  max-height: 340px;
+  overflow-y: auto;
+  line-height: 1.7;
+}
+.source-list li {
+  margin-bottom: 9px;
+}
+.handoff-prompt {
+  min-height: 170px;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  margin-top: 10px;
+}
+.workshop-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.workshop-status p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 5px 0 0;
+}
+.workshop-status a {
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+.workshop-disclosure {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 16px 0;
+}
+.workshop-disclosure > summary {
+  font-size: 14px;
+}
+.workshop-disclosure[open] > summary {
+  margin-bottom: 12px;
+}
+.audit-counts,
+.handoff-sequence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 20px 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.audit-counts strong {
+  color: var(--ink);
+  font-size: 18px;
+  margin-right: 4px;
+}
+.audit-help > summary {
+  font-size: 12px;
+  color: var(--muted);
+}
+.audit-group-empty {
+  padding: 18px 24px;
+}
+.audit-group-empty .empty {
+  border: 0;
+  padding: 0;
+  margin: 8px 0 0;
+}
+.audit-group-empty .group-controls {
+  margin: 10px 0 0;
+  justify-content: flex-end;
+}
+.handoff-sequence {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+.handoff-sequence li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.handoff-sequence span {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--paper);
+  font-size: 11px;
+}
+.handoff-sequence [aria-current='step'] {
+  color: var(--accent);
+  font-weight: 650;
+}
+.handoff-sequence [aria-current='step'] span {
+  background: var(--selected);
+}
+.handoff-step {
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+  margin-top: 24px;
+}
+.handoff-step h3 {
+  margin-bottom: 10px;
+}
+#audit-selection {
+  scroll-margin-top: 20px;
+}
+
+@media (max-width: 680px) {
+  .workshop-status {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .repair-actions {
+    position: static;
+  }
+}

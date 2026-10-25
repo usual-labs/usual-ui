@@ -97,10 +97,19 @@ test('CLI initializes an inactive draft, inventories Next-style files, and separ
     const audit = JSON.parse(run(root, ['audit', '--json'], 1));
     assert.deepEqual(audit.errors, []);
     assert.ok(audit.findings.some((finding: { kind: string }) => finding.kind === 'decision'));
+    assert.equal(audit.summary.totals.occurrences, audit.findings.length);
+    assert.ok(audit.summary.totals.decisions > 0);
+    assert.deepEqual(
+      audit.summary.problems
+        .flatMap((problem: { findingIds: string[] }) => problem.findingIds)
+        .sort(),
+      audit.findings.map((finding: { id: string }) => finding.id).sort(),
+    );
     assert.equal(await snapshot(root), auditBefore);
     const check = JSON.parse(run(root, ['check', '--json']));
     assert.deepEqual(check.findings, []);
     assert.deepEqual(check.active, []);
+    assert.equal(check.summary.totals.occurrences, 0);
     assert.equal(await snapshot(root), auditBefore);
     run(root, ['init', '--write', '--json'], 2);
     assert.equal(await readFile(manifestPath, 'utf8'), policy);

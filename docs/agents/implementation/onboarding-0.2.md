@@ -12,7 +12,7 @@ a reference UI; theme variants and unsupported preview values are explicit.
 
 Final approval saves a small inactive `usual.design.json`. Recommendations,
 evidence, alternatives, choices, and deferred categories stay in
-`docs/usual-design/onboarding/`. The existing audit workflow lets users approve
+`docs/usual-ui/onboarding/`. The existing audit workflow lets users approve
 selected repairs and copy a prompt referencing their saved verification record.
 Activation still requires a fresh clean audit for the entire category.
 
@@ -59,21 +59,21 @@ variables, database, migrations, hosted services, or model credentials are neede
 ## Remote distribution evidence
 
 - Implementation commit: `c3ab664c7f59feb6e8b88923df12d5373852aa2d`, pushed to
-  `usual-labs/usual-design` on `main`.
-- [GitHub CI](https://github.com/usual-labs/usual-design/actions/runs/39433061684)
+  `usual-labs/usual-ui` on `main`.
+- [GitHub CI](https://github.com/usual-labs/usual-ui/actions/runs/39433061684)
   completed successfully for that exact commit.
 - Official `skills@1.7.4` remote `--list` discovered both skills. One genuine
-  isolated project-local installation with `--skill usual-design-onboarding
-  --skill usual-design -a codex -y` succeeded. Both installed SKILL.md files and
+  isolated project-local installation with `--skill usual-ui-onboarding
+  --skill usual-ui -a codex -y` succeeded. Both installed SKILL.md files and
   the proposal reference matched the repository byte-for-byte.
 - Both direct skills.sh pages returned HTTP 200, the correct titles, and actual
   skill content:
-  [onboarding](https://skills.sh/usual-labs/usual-design/usual-design-onboarding),
-  [ongoing checks/repairs](https://skills.sh/usual-labs/usual-design/usual-design).
-  A general `skills find usual-design` search did not yet return our repository;
+  [onboarding](https://skills.sh/usual-labs/usual-ui/usual-ui-onboarding),
+  [ongoing checks/repairs](https://skills.sh/usual-labs/usual-ui/usual-ui).
+  A general `skills find usual-ui` search did not yet return our repository;
   direct installation and page availability are verified separately from search.
 - The verified npm archive is
-  `.usual-design/artifacts/usualui-lint-0.2.0.tgz`, integrity
+  `.usual-ui/artifacts/usualui-lint-0.2.0.tgz`, integrity
   `sha512-Cm1iDSOSrHE0vNj2EpqeLsAyI6wBUN/EKTHuJfSFc52gKZ2J7YwjvDvNdE6gDZhYVjv6N8PuPsHj43hLqTPBrg==`.
 - npm publication was initiated from this archive, but the account verification
   session expired and the command exited without publishing. The earlier chat
@@ -81,7 +81,7 @@ variables, database, migrations, hosted services, or model credentials are neede
   that the latest version is still 0.1.0 and 0.2.0 is absent. No 0.2.0 registry
   publication, registry installation, or OIDC provenance is claimed.
 - The documentation receipt commit `242bf2d` also passed
-  [GitHub CI](https://github.com/usual-labs/usual-design/actions/runs/39433682795).
+  [GitHub CI](https://github.com/usual-labs/usual-ui/actions/runs/39433682795).
 
 When the user is available, retry publication to request fresh verification.
 Confirm publication outcome before any further retry. Compare the

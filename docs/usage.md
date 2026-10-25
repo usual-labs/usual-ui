@@ -1,11 +1,11 @@
-# Usual Design: local usage
+# Usual UI: local usage
 
-Usual Design turns the project’s design decisions into deterministic checks. It is intended for AI-heavy teams using React, JavaScript/TypeScript, and Tailwind v4. Read the [compatibility boundaries](compatibility.md) before treating a pass as evidence.
+Usual UI turns the project’s design decisions into deterministic checks. It is intended for AI-heavy teams using React, JavaScript/TypeScript, and Tailwind v4. Read the [compatibility boundaries](compatibility.md) before treating a pass as evidence.
 
 ## Start with your existing agent
 
 Copy the [README onboarding prompt](../README.md#quick-start) into your agent.
-It installs `usual-design-onboarding` from `usual-labs/usual-design` through the
+It installs `usual-ui-onboarding` from `usual-labs/usual-ui` through the
 Vercel Skills CLI, reads the installed skill, and prepares recommendations from
 your project. Node 22.20+ supports the current Skills installer; our CLI needs
 22.12+. This onboarding workflow requires @usualui/lint 0.3.0+.
@@ -17,15 +17,15 @@ not be duplicates. Defer a whole category when its decisions are not ready.
 
 The agent writes a proposal following `schema/onboarding.schema.json`, with
 actual rule fragments and source evidence. The installed skill includes the
-[format and role guide](../skills/usual-design-onboarding/references/proposal.md).
+[format and role guide](../skills/usual-ui-onboarding/references/proposal.md).
 It runs these commands from your project:
 
 ```sh
 npm install --save-dev @usualui/lint@^0.3.0
-npx --no-install usual-design init --json
-npx --no-install usual-design onboard --proposal docs/usual-design/onboarding/proposal.json
-npx --no-install usual-design onboard --proposal docs/usual-design/onboarding/proposal.json --write
-npx --no-install usual-design wizard
+npx --no-install usual-ui init --json
+npx --no-install usual-ui onboard --proposal docs/usual-ui/onboarding/proposal.json
+npx --no-install usual-ui onboard --proposal docs/usual-ui/onboarding/proposal.json --write
+npx --no-install usual-ui wizard
 ```
 
 `onboard` validates without writes by default. `--write` saves a resumable proposal
@@ -34,7 +34,7 @@ a browser. Choices persist on Continue, Back, or Save. Final approval
 writes the minimal manifest with all categories inactive. A fresh audit then
 lets you select a repair batch and copy a prompt for your existing agent.
 
-`docs/usual-design/onboarding/session.json` holds recommendations and choices;
+`docs/usual-ui/onboarding/session.json` holds recommendations and choices;
 previous preparations are archived under `history/`. Source and policy changes
 invalidate stale approval. Refresh evidence and rerun preparation after source
 changes. Existing active/nonempty contracts use the policy workshop for
@@ -51,7 +51,7 @@ props in that page; deferring a category restores its original project values.
 
 The agent starts both local servers and adds `showcase: {url, title, themes}` to
 the proposal. This metadata stays out of the manifest. See the
-[showcase guide](../skills/usual-design-onboarding/references/showcase.md) for
+[showcase guide](../skills/usual-ui-onboarding/references/showcase.md) for
 coverage, bridge usage, dev-only routing, and frame policy. Upgrade to 0.3.0 or later
 for this bridge; earlier packages continue to use the reference sheet.
 After updating the showcase URL, refresh preparation and restart the wizard.
@@ -203,10 +203,40 @@ The full audit examines every category, whether active or not. Findings appear i
 
 Semantic findings belong to the relevant style/component category. Coverage is an audit group, not a sixth independently activated design category. An unverifiable use affecting an active category blocks its check.
 
-Save an audit before selecting repairs. The wizard records selected work and decisions in `docs/usual-design` within the project. Keep durable records in version control where appropriate; they are local project artifacts, not a hosted backlog. The separate `.usual-design` directory holds integration ownership and local hook state.
+### Grouped reports
+
+In the current source checkout and next release, CLI output and the wizard group
+identical diagnostic patterns while preserving each source occurrence. Matching
+rule, category, kind, message, observed/expected value, and affected coverage scope
+form a group; grouping does not establish a shared root cause. You can still select
+one occurrence for repair or select an entire group, including occurrences hidden
+by search. Policy decisions remain separate from application repair batches.
+
+`audit --json`, `check --json`, and `activate --json` retain the full result and add
+a derived `summary`:
+
+- `totals`, `byCategory`, and `byRule` distinguish diagnostic `problems`, total
+  `occurrences`, `violations`, unresolved `coverage`, and policy `decisions`.
+  The three kind counts count occurrences; `byRule` is an array keyed by `ruleId`.
+- `problems` contains the shared diagnostic fields, all original `findingIds`, and
+  `remediation: { action, instruction }`. Actions are `repair-source`,
+  `resolve-coverage`, or `review-policy`.
+- Top-level `findings` keeps every ID, file/line/column, and available source
+  span/context. Resolve group IDs against this array for complete evidence.
+
+The persisted `docs/usual-ui/audit.json` remains the raw version 1
+`AuditResult`, without `summary`; repair records likewise retain their strict
+existing schema. Use `audit --save` to produce durable records rather than saving
+CLI presentation JSON over them. Older generated audit Markdown refreshes without
+a migration, and manual changes remain protected. Summaries and guidance do not
+change exit codes, authorize policy edits, or replace snapshot verification.
+
+### Select and activate
+
+Save an audit before selecting repairs. The wizard records selected work and decisions in `docs/usual-ui` within the project. Keep durable records in version control where appropriate; they are local project artifacts, not a hosted backlog. The separate `.usual-ui` directory holds integration ownership and local hook state.
 
 ```sh
-npx --no-install usual-design audit --root /path/to/project --save
+npx --no-install usual-ui audit --root /path/to/project --save
 ```
 
 The user selects a repair batch, then gives the saved plan to their existing agent. The agent changes application code, reruns the audit, and leaves deferred work documented. Recheck freshness before resuming an old plan because source and policy may have changed.
@@ -214,8 +244,8 @@ The user selects a repair batch, then gives the saved plan to their existing age
 Ordinary repair authorization does not authorize changing `allowed`, `ignore`, `exceptions`, activation settings, or rule requirements. A design-policy change requires an explicit, separate decision and a visible review of those files.
 
 ```sh
-npx --no-install usual-design activate --root /path/to/project --categories colors,typography --write
-npx --no-install usual-design check --root /path/to/project
+npx --no-install usual-ui activate --root /path/to/project --categories colors,typography --write
+npx --no-install usual-ui check --root /path/to/project
 ```
 
 Activation requires current evidence that the selected categories are resolved. If typography is skipped, lint does not check typography at all, including new typography violations. The audit continues to document it. There is no baseline that silently accepts individual violations in an active category.
@@ -227,7 +257,7 @@ First validate the command directly. With the package installed in your project,
 ```json
 {
   "scripts": {
-    "lint:design": "usual-design check"
+    "lint:design": "usual-ui check"
   }
 }
 ```
@@ -237,11 +267,11 @@ Run `npm run lint:design` locally and in CI after installing locked dependencies
 Use the generated preview before requesting setup writes. First-class agent setup targets Codex and Claude Code. Review proposed instruction, skill, and hook changes; preserve existing user content. Automatic hooks depend on each agent’s version, trust settings, and supported lifecycle events. A skill instruction to run a command is not an automatic hook.
 
 ```sh
-npx --no-install usual-design setup --root /path/to/project --host both --hooks
-npx --no-install usual-design setup --root /path/to/project --host both --hooks --write
+npx --no-install usual-ui setup --root /path/to/project --host both --hooks
+npx --no-install usual-ui setup --root /path/to/project --host both --hooks --write
 ```
 
-The generated npm script uses the locally installed `usual-design` executable. Install `@usualui/lint` as a development dependency in the target project before triggering it; review the resulting lockfile changes. Generated native hooks invoke the locally installed built CLI without downloading a package. Add `--commit-hook` to the setup preview only if you want the optional hook; existing hook managers and conflicting hooks require manual integration.
+The generated npm script uses the locally installed `usual-ui` executable. Install `@usualui/lint` as a development dependency in the target project before triggering it; review the resulting lockfile changes. Generated native hooks invoke the locally installed built CLI without downloading a package. Add `--commit-hook` to the setup preview only if you want the optional hook; existing hook managers and conflicting hooks require manual integration.
 
 Commit hooks provide local feedback. A working-tree check does not prove the Git index is clean when files are partially staged. Run the independent CI check against the committed checkout. Do not assume a local executable path exists on the CI runner; build/install the tool from the exact source/package the workflow is meant to validate.
 
@@ -250,7 +280,7 @@ Do not record a setup integration as working until its actual event has triggere
 ## Output, errors, and troubleshooting
 
 ```sh
-npx --no-install usual-design check --root /path/to/project --json
+npx --no-install usual-ui check --root /path/to/project --json
 ```
 
 | Exit | Meaning                                                                                      |
@@ -286,7 +316,7 @@ This is an optional manifest section, enforced by the `components` category. Rep
 
 ## Saved decisions and repair verification
 
-Manifest saves record a prepared before/after policy decision in `docs/usual-design/decisions/`. The wizard can supply a rationale. An empty rationale remains explicitly unknown. A prepared record alone does not mean a manifest write succeeded; compare its resulting hash with the actual manifest.
+Manifest saves record a prepared before/after policy decision in `docs/usual-ui/decisions/`. The wizard can supply a rationale. An empty rationale remains explicitly unknown. A prepared record alone does not mean a manifest write succeeded; compare its resulting hash with the actual manifest.
 
 `audit --save` refreshes `audit.json`, its generated Markdown view, and `repair-progress.json` / `repair-progress.md` when repair batches exist. Original approved plans remain unchanged. Findings moved to another line still count as reported. Changes to policy require review. “Not observed in current audit” describes current covered evidence and does not prove visual correctness. Keep manual notes in separate files; edited audit Markdown is preserved by refusing an automatic overwrite.
 
@@ -296,8 +326,14 @@ Component target `name` refers to the exported name, independently of a local al
 
 ## Verify saved repairs before editing
 
-Run `usual-design verify-plan --plan docs/usual-design/repairs/<id>.json` immediately before starting an approved batch. For a custom manifest pass the same `--config` used to create the batch. This read-only operation validates the record, approval, current source/policy snapshot, and selected findings. It never executes commands stored in records. If it fails, refresh the audit and explicitly approve a current selection. After repairs the original snapshot is expected to differ; use a fresh audit to verify outcomes.
+Run `usual-ui verify-plan --plan docs/usual-ui/repairs/<id>.json` immediately before starting an approved batch. For a custom manifest pass the same `--config` used to create the batch. This read-only operation validates the record, approval, current source/policy snapshot, and selected findings. It never executes commands stored in records. If it fails, refresh the audit and explicitly approve a current selection. After repairs the original snapshot is expected to differ; use a fresh audit to verify outcomes.
 
 Writes use per-file exclusive locks, temporary files, fsync, and a final content/hash recheck before rename. These protections detect observable conflicts; they are not a repository-wide transaction and cannot stop another editor from changing source immediately after a scan. Activation scans again before committing policy. A prepared receipt is not proof of commit. Preserve edited/corrupt records and restore or reconcile them before retrying; never delete approval history to conceal a failure.
 
 An unqualified semantic `forbidClasses` utility, such as `bg-ocean`, also forbids its responsive/state/arbitrary-variant and important forms. A variant-qualified entry such as `hover:bg-ocean` retains that explicit variant scope. Required classes and `target.classes` contexts are exact source tokens; a hover-only class does not satisfy an unconditional requirement.
+
+For marked numeric table cells, see [numeric typography](numeric-rules.md). For
+explicit checks of a prepared browser page, see [optional rendered checks](runtime.md).
+The rendered entry point is a separate opt-in path available in this source
+checkout for the next release; its results do not satisfy static coverage or
+activate source categories.

@@ -1,8 +1,12 @@
 node_modules/
 dist/
 *.tgz
+.usual-ui/
 .usual-design/
 .env*
 !.env.example
+site/docs/usual-ui/
 site/docs/usual-design/
 .DS_Store
+output/playwright/
+.playwright-cli/

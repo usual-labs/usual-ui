@@ -1,6 +1,6 @@
 # Publishing @usualui/lint
 
-The npm package is `@usualui/lint`. Its executable remains `usual-design`, so project scripts and existing CLI commands keep the same name. Other Usual packages can share the `@usualui` scope without becoming part of this package.
+The npm package is `@usualui/lint`. The next release uses `usual-ui` as its canonical executable and retains `usual-design` as an alias. Published 0.3.0 still uses the previous name; see [upgrade notes](renaming.md). Other Usual packages can share the `@usualui` scope without becoming part of this package.
 
 ## Release history
 
@@ -22,7 +22,7 @@ Do not try to publish `0.1.0` again. Its archive is immutable. Updated documenta
    | Setting           | Value          |
    | ----------------- | -------------- |
    | Organization/user | `usual-labs`   |
-   | Repository        | `usual-design` |
+   | Repository        | `usual-ui` |
    | Workflow filename | `publish.yml`  |
    | Environment       | `npm`          |
    | Allowed action    | Publish        |
@@ -56,10 +56,10 @@ Use the actual release version in the second command and compare its integrity w
 
 ```sh
 npm install --save-dev @usualui/lint
-npx --no-install usual-design --help
+npx --no-install usual-ui --help
 ```
 
-For projects configured with the earlier unpublished `@usual/design-lint` candidate, install the new package and rerun `usual-design setup` in preview mode. Generated hook runners contain the package path; review and apply their update with `--write` before relying on native hooks.
+For projects configured with the earlier unpublished `@usual/design-lint` candidate, install the new package and rerun `usual-ui setup` in preview mode. Generated hook runners contain the package path; review and apply their update with `--write` before relying on native hooks.
 
 ## References
 

@@ -94,7 +94,7 @@ test('tokenless explicit choices preview without writes and reach repair plus ac
     assert.ok(preview.findings.some((f) => f.actual === 'rounded-[3px]'));
     assert.ok(preview.findings.some((f) => f.actual === 'bg-[#445566]'));
     await assert.rejects(readFile(join(root, 'usual.design.json')), { code: 'ENOENT' });
-    await assert.rejects(readFile(join(root, 'docs/usual-design/audit.json')), { code: 'ENOENT' });
+    await assert.rejects(readFile(join(root, 'docs/usual-ui/audit.json')), { code: 'ENOENT' });
 
     await api('manifest', {
       manifest,

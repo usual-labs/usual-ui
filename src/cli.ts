@@ -10,7 +10,8 @@ import { activate, createPlan, saveAudit, verifyPlan } from './records.js';
 import { startWizard } from './server.js';
 import { planSetup, applySetup, handleHook } from './integrations.js';
 import { prepareOnboarding } from './onboarding.js';
-const help = `Usual Design — project-owned design enforcement\n\nUsage: usual-design <command> [--root path] [--config usual.design.json]\n\n  init        Summarize discovery; --json includes inventory; --write saves draft\n  onboard     Prepare guided review: --proposal path.json [--write]\n  validate    Validate the manifest without running analysis\n  audit       Audit every category; --save records results\n  check       Enforce only activated categories (read-only)\n  wizard      Start the local visual onboarding server (no browser auto-open)\n  plan        Save selected repairs: --findings id,id --snapshot hash --write\n  verify-plan Verify saved approval and current source before repairs; --plan path\n  activate    Fresh-audit gate: --categories colors,typography,... --write\n  setup       Preview agent installation; --host codex|claude|both|portable\n              --hooks --commit-hook optionally propose integrations; --write applies\n  hook        Native agent handler; --host codex|claude, reads JSON stdin\n\nOptions: --json --port 0 --version --help\nExit: 0 clean; 1 findings/unverifiable coverage; 2 configuration/operational error.\nNo active categories means no design enforcement. An audit still examines all.\n`;
+import { reportResult } from './reporting.js';
+const help = `Usual UI — project-owned design enforcement\n\nUsage: usual-ui <command> [--root path] [--config usual.design.json]\n\n  init        Summarize discovery; --json includes inventory; --write saves draft\n  onboard     Prepare guided review: --proposal path.json [--write]\n  validate    Validate the manifest without running analysis\n  audit       Audit every category; --save records results\n  check       Enforce only activated categories (read-only)\n  wizard      Start the local visual onboarding server (no browser auto-open)\n  plan        Save selected repairs: --findings id,id --snapshot hash --write\n  verify-plan Verify saved approval and current source before repairs; --plan path\n  activate    Fresh-audit gate: --categories colors,typography,... --write\n  setup       Preview agent installation; --host codex|claude|both|portable\n              --hooks --commit-hook optionally propose integrations; --write applies\n  hook        Native agent handler; --host codex|claude, reads JSON stdin\n\nOptions: --json --port 0 --version --help\nExit: 0 clean; 1 findings/unverifiable coverage; 2 configuration/operational error.\nNo active categories means no design enforcement. An audit still examines all.\n`;
 try {
   const { values: v, positionals } = parseArgs({
     allowPositionals: true,
@@ -61,7 +62,7 @@ try {
         { manifest, inventory, errors: analysis.errors, written: !!v.write },
         `${v.write ? `Inactive draft saved to ${config}.` : 'Discovery preview; no files written.'}\n` +
           `${inventory.files.length} covered files · ${inventory.tokens.length} token definitions · ${inventory.candidates?.length ?? 0} observed values.\n` +
-          `Use --json for the full evidence report. Ask your agent to use the usual-design-onboarding skill for guided setup.\n` +
+          `Use --json for the full evidence report. Ask your agent to use the usual-ui-onboarding skill for guided setup.\n` +
           analysis.errors.map((e) => `ERROR ${e}`).join('\n'),
       );
     } else if (command === 'onboard') {
@@ -71,7 +72,7 @@ try {
         result,
         `${result.decisions} decisions in ${result.categories.join(', ')}.\n` +
           (v.write
-            ? `Onboarding prepared at ${result.path}. Run usual-design wizard to review it.`
+            ? `Onboarding prepared at ${result.path}. Run usual-ui wizard to review it.`
             : 'Proposal validated; no files written. Add --write to prepare the guided wizard.'),
       );
     } else if (command === 'validate') {
@@ -83,7 +84,7 @@ try {
         if (command !== 'audit') throw new Error('--save is only valid for audit.');
         await saveAudit(root, result);
       }
-      emit(result, humanResult(result));
+      emit(reportResult(result), humanResult(result));
       process.exitCode = resultExit(result);
     } else if (command === 'wizard') {
       const port = Number(v.port ?? 0);
@@ -101,7 +102,7 @@ try {
       if (!selected.length || !selected.every((c) => categories.includes(c as Category)))
         throw new Error(`Choose categories: ${categories.join(',')}`);
       const result = await activate(root, selected as Category[], v.snapshot, config);
-      emit(result, humanResult(result));
+      emit(reportResult(result), humanResult(result));
       process.exitCode = resultExit(result);
     } else if (command === 'plan') {
       if (!v.write || !v.snapshot || !v.findings)
@@ -147,6 +148,6 @@ try {
   const json = process.argv.includes('--json');
   const message = (e as Error).message;
   if (json) console.log(JSON.stringify({ version: 1, error: message }));
-  else console.error(`Usual Design: ${message}`);
+  else console.error(`Usual UI: ${message}`);
   process.exitCode = 2;
 }

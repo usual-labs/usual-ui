@@ -1,4 +1,4 @@
-name: Usual Design
+name: Usual UI
 on: [push, pull_request]
 permissions:
   contents: read
