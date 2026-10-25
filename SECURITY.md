@@ -4,9 +4,7 @@
 
 The first public release is `@usualui/lint@0.1.0`, published on 2026-10-20. Security fixes target the development source and a subsequent release; no older release line or backport schedule is promised.
 
-**Private vulnerability reporting is not configured in this checkout.** Before opening public contributions, the repository owner must enable and verify a private reporting route, name the people who monitor it, and update this document. This file alone does not enable GitHub reporting.
-
-Once the canonical GitHub repository has private reporting enabled, use **Security → Advisories → Report a vulnerability**. If that action is absent, do not assume a report can be sent privately. Keep vulnerability details private until the repository owner supplies a verified confidential route. Do not use a public issue or pull request as a fallback for exploit details.
+Private vulnerability reporting is enabled on [usual-labs/usual-ui](https://github.com/usual-labs/usual-ui) (since 2026-10-25). Report privately through **Security → Advisories → Report a vulnerability**, and keep details private until a fix is released. Do not use a public issue or pull request for exploit details.
 
 ## What to report privately
 

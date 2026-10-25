@@ -7,7 +7,7 @@ Contributors should start with [CONTRIBUTING.md](../CONTRIBUTING.md). The source
 ## Before opening public contributions
 
 - Confirm the canonical repository, package name/scope, copyright attribution, and owners.
-- Enable GitHub private vulnerability reporting or establish another verified private route. Assign primary and backup responders and update [SECURITY.md](../SECURITY.md).
+- Private vulnerability reporting is enabled (2026-10-25). Assign primary and backup responders and name them in [SECURITY.md](../SECURITY.md).
 - Establish a confidential conduct contact and an alternate for conflicts of interest. Review the enforcement process and update [CODE_OF_CONDUCT.md](../CODE_OF_CONDUCT.md).
 - Verify the issue forms and PR template on the default branch. Do not assign labels or reviewers that do not exist.
 - Add verified repository, homepage, and issue URLs to package metadata and public documentation.
@@ -78,3 +78,16 @@ The site is static output in `dist/site`; it has no database migrations or appli
 Keep the previous known-good artifact and the evidence identifying what was published. Stop further rollout, describe affected versions and any workaround, and prepare a tested patch. Prefer a corrective version over attempting to overwrite a published npm version. Registry deprecation or removal and public notices require the authorized owner and the current registry policy.
 
 For a website rollback, restore the prior immutable artifact through the actual hosting provider and verify it. For a security problem, coordinate details privately until a safe disclosure is ready.
+
+## Repository protections (set 2026-10-25)
+
+- `main`: no force-push or deletion for anyone; other changes need a pull request with the
+  `verify` check passing (repository admins can push directly). Only admins can create, move or
+  delete `v*` tags.
+- Actions: only GitHub-owned actions plus `zizmorcore/zizmor-action` and `ossf/scorecard-action`,
+  each pinned to a full commit SHA. Workflow runs from outside contributors need approval.
+- The `npm` environment, used by the publish workflow, waits for a maintainer's approval and only
+  accepts `main`.
+- Secret scanning with push protection, Dependabot alerts and security updates, and immutable
+  releases are on. CodeQL, zizmor and OpenSSF Scorecard run as workflows; Dependabot updates the
+  pinned actions and npm dependencies weekly, a week after each release.

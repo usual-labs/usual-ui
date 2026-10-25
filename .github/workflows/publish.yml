@@ -13,8 +13,7 @@ on:
         default: false
         type: boolean
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: npm-release
@@ -22,21 +21,26 @@ concurrency:
 
 jobs:
   publish:
+    name: Verify and publish
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Waits for a maintainer's approval and only runs from main.
     environment: npm
     permissions:
-      contents: read
-      id-token: write
+      contents: read # check out the source
+      id-token: write # npm trusted publishing and provenance
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # No dependency cache in the publishing job, so a poisoned cache can't reach the package.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
-          cache: npm
       - name: Install npm with trusted publishing support
-        run: npm install --global npm@11.5.1
+        # An exact npm version; trusted publishing needs 11.5.1 or later.
+        run: npm install --global npm@11.5.1 # zizmor: ignore[adhoc-packages]
       - name: Validate requested package and version
         env:
           RELEASE_VERSION: ${{ inputs.version }}
@@ -75,7 +79,7 @@ jobs:
           ARCHIVE: ${{ steps.archive.outputs.path }}
         run: npm publish "$ARCHIVE" --dry-run --ignore-scripts --access public --registry https://registry.npmjs.org/
       - name: Retain the verified archive and proof
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: npm-candidate-${{ inputs.version }}-${{ github.sha }}
           path: .usual-ui/artifacts/

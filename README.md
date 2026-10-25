@@ -4,6 +4,8 @@ Project-owned design rules. Deterministic feedback for developers and coding age
 
 Usual UI is the first open-source tool from **Usual Labs**. It helps React/Tailwind projects enforce approved values, explicit semantic conventions, and shared component usage. The project owns the contract; its existing coding agent helps discover conventions and repair violations.
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/usual-labs/usual-ui/badge)](https://scorecard.dev/viewer/?uri=github.com/usual-labs/usual-ui)
+
 Install [@usualui/lint](https://www.npmjs.com/package/@usualui/lint) from npm. Source is available at [usual-labs/usual-ui](https://github.com/usual-labs/usual-ui). The website remains a local preview.
 
 The Usual UI rename is currently available in this source checkout. Published
@@ -77,6 +79,6 @@ Contributions are welcome: reproducible bugs, clearer documentation, better diag
 - [Maintainer review and release guide](docs/maintaining.md)
 - [Publishing @usualui/lint](docs/publishing.md)
 
-Private reporting setup and the public contribution intake process are still being finalized. The community documents state those limits explicitly.
+Security problems go through private vulnerability reporting; see [SECURITY.md](SECURITY.md).
 
 Licensed under [MIT](LICENSE); see [third-party notices](THIRD_PARTY_NOTICES.md).
