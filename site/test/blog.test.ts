@@ -95,7 +95,7 @@ test('file discovery orders published posts, excludes drafts and future dates, a
 test('metadata is escaped and an empty collection stays useful', () => {
   const post = parsePost('safe.md', article().replace('A useful note', '<script>bad</script>'));
   const page = renderBlog([post], [], post);
-  assert.doesNotMatch(page, /<script>/);
+  assert.doesNotMatch(page, /<script\b/i);
   assert.match(page, /&lt;script&gt;bad&lt;\/script&gt;/);
   assert.match(renderBlog([], []), /No posts yet/);
 });

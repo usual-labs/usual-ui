@@ -40,7 +40,9 @@ export function moduleCandidates(file: string, ref: string, config: CompilerReso
     if (!matches) continue;
     const middle = index < 0 ? '' : ref.slice(index, ref.length - (pattern.length - index - 1));
     result.push(
-      ...replacements.map((p) => posix.normalize(posix.join(config.base, p.replace('*', middle)))),
+      ...replacements.map((p) =>
+        posix.normalize(posix.join(config.base, p.replaceAll('*', middle))),
+      ),
     );
   }
   return result;
